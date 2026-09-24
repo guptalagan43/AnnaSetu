@@ -359,6 +359,14 @@ export default function ShelterDashboard() {
                     <p>📍 <strong>Pickup:</strong> {listing?.pickup_address || "Specified Location"}</p>
                     <p>⏱ <strong>Status:</strong> {listing?.status?.toUpperCase() || "MATCHED"}</p>
                   </div>
+
+                  {listing?.id ? (
+                    <Link href={`/shelter/checklist/${listing.id}`}>
+                      <Button variant="secondary" size="sm" className="w-full mt-3 font-mono text-xs font-bold border-2 border-brand-black">
+                        OPEN DELIVERY CHECKLIST 📋
+                      </Button>
+                    </Link>
+                  ) : null}
                 </Card>
               );
             })}

@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
 **Last Updated:** 2026-09-24  
-**Current Status:** 🟡 Phase 13 — Delivery Receipt & Food Acceptance Checklist
+**Current Status:** 🟡 Phase 14 — Agentic Dispatcher
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 13 — Delivery Receipt & Food Acceptance Checklist  
+**Phase:** 14 — Agentic Dispatcher  
 **File being worked:** (not started)  
-**Last action:** Phase 12 complete — OSRM distance matrix client with Haversine fallback, nearest-neighbor route optimizer enforcing pickup-before-delivery (FR-ROUTE-04) and ERS urgency (FR-ROUTE-05), GET /api/drivers/[id]/route, interactive Leaflet route map (/driver/route/[id]) with numbered stop markers and Google Maps deep-links, driver dashboard integration, 10 routing tests (59 total passing tests).
+**Last action:** Phase 13 complete — 5-point physical delivery checklist at /shelter/checklist/[listing_id], 4-digit Donor PIN verification, POST /api/delivery-receipts, pipeline advancement (delivered on pass, disputed on fail), two-strike donor violation policy (strike 1 warning, strike 2 account suspension & active listings cancellation), DeliveryAccepted & DeliveryDisputed email templates, 11 tests (70 total tests passing).
 
 ---
 
@@ -46,6 +46,7 @@
 | 10 | Shelter Dashboard | phase-10-shelter-dashboard | — | Incoming matches sorted by ERS desc, MatchCard with capacity fit indicator, POST /api/matches/[id]/accept (listing matched, shelter load updated, donor notified via SMTP), POST /api/matches/[id]/decline with required reason & rematch cascade, /shelter/capacity page, coordinator invite flow, 11 tests |
 | 11 | Driver Dashboard | phase-11-driver-dashboard | — | Driver registration (/register/driver), admin listings dispatch (/admin/listings), POST /api/driver-assignments, driver dashboard (/driver) with active stops and navigation, PATCH /api/driver-assignments/[id]/pickup, PATCH /api/driver-assignments/[id]/deliver (advancing pipeline matched -> driver_assigned -> in_transit -> checklist), driver availability toggle, SMTP notifications, 8 tests |
 | 12 | Route Optimization | phase-12-route-optimization | — | OSRM client with 3s timeout & Haversine fallback (* 1.35 urban factor), nearest-neighbor optimizer enforcing pickup-before-delivery & ERS >= 70 urgency, GET /api/drivers/[id]/route, interactive Leaflet route map (/driver/route/[id]), numbered stop markers, Google Maps deep-link navigation, cumulative ETAs with 10-min handover buffer, 10 tests |
+| 13 | Delivery Checklist | phase-13-delivery-checklist | — | 5-point physical verification, 4-digit Donor PIN verification, POST & GET /api/delivery-receipts, status update to delivered (with impact recording) or disputed, two-strike violation policy (warning on 1st strike, suspension + cancellation on 2nd strike), DeliveryAccepted & DeliveryDisputed emails, 11 tests |
 
 ---
 
@@ -66,7 +67,7 @@
 | 10 | Shelter Dashboard | ✅ Complete | phase-10-shelter-dashboard | — | Match accept/decline UI, countdown timer, shelter capacity tracker, preferences & coordinator invite |
 | 11 | Driver Dashboard | ✅ Complete | phase-11-driver-dashboard | — | Driver registration, assignment, pickup/delivery status pipeline (matched -> driver_assigned -> in_transit -> checklist) |
 | 12 | Route Optimization | ✅ Complete | phase-12-route-optimization | — | OSRM client, nearest-neighbor stop ordering, route map, ETAs, Google Maps deep links |
-| 13 | Delivery Checklist | 🟡 In Progress | phase-13-delivery-checklist | — | 5-point checklist, PIN verification, violation policy enforcement |
+| 13 | Delivery Checklist | ✅ Complete | phase-13-delivery-checklist | — | 5-point checklist, PIN verification, violation policy enforcement |
 | 14 | Agentic Dispatcher | ⬜ Not started | — | — | — |
 | 15 | CV Intake (Gemini Vision) | ⬜ Not started | — | — | — |
 | 16 | NLP Parser (Gemini Text) | ⬜ Not started | — | — | — |
@@ -132,6 +133,7 @@
 | 2026-09-24 | Consolidated `/app` to `/src/app` | Fix Next.js App Router root conflict preventing compilation of src/app |
 | 2026-09-24 | Lazy BullMQ worker initialization | Avoids blocking test runner and app import when Redis local server is offline |
 | 2026-09-24 | OSRM Table routing with 1.35x Haversine fallback & Nearest-Neighbor pickup-first sequencing | Provides robust real-road routing with offline fallback (25km/h speed, 10-min handover buffer) and hard constraint that pickups precede deliveries |
+| 2026-09-24 | Two-strike donor violation policy | 1st strike issues formal warning via email; 2nd strike immediately suspends donor verification status and cancels all active listings |
 
 ---
 
@@ -260,6 +262,14 @@
 - `src/components/routing/RouteMap.tsx` — Dynamic Leaflet route map with numbered SVG/HTML divIcon markers, polyline rendering, and stop popups
 - `src/app/(dashboard)/driver/route/[id]/page.tsx` — Driver route view with summary metrics, numbered stop cards, real-time GPS detection, and Google Maps deep-link navigation
 - `tests/routing.test.ts` — 10 unit and integration tests covering OSRM distance matrix, geometry, constraints, and ETAs
+
+### Key Source Files (Phase 13)
+- `src/lib/validators/checklist.schema.ts` — Zod schema for 5-point inspection checklist with min 10-char note requirement on issues
+- `src/app/api/delivery-receipts/route.ts` — Delivery receipts endpoint verifying 4-digit Donor PIN, advancing listing status (delivered vs disputed), recording impact, and enforcing two-strike donor violation policy
+- `src/app/(dashboard)/shelter/checklist/[listing_id]/page.tsx` — Shelter delivery acceptance checklist interface with 5-point physical verification, PIN input, and dispute submission
+- `src/emails/DeliveryAccepted.tsx` — Brutalist email template confirming rescue completion with food rescued, meals served, and CO2e avoided metrics
+- `src/emails/DeliveryDisputed.tsx` — Brutalist email template for warning notice (strike 1) and account suspension notice (strike 2)
+- `tests/checklist.test.ts` — 11 unit and integration tests covering 5-point criteria, PIN verification, status pipeline transitions, violation policy, and email rendering
 
 ---
 

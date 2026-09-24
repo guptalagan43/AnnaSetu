@@ -14,6 +14,8 @@ import { MatchAccepted } from "@/emails/MatchAccepted";
 import { CoordinatorInvite } from "@/emails/CoordinatorInvite";
 import { DriverAssigned } from "@/emails/DriverAssigned";
 import { DriverPickedUp } from "@/emails/DriverPickedUp";
+import { DeliveryAccepted } from "@/emails/DeliveryAccepted";
+import { DeliveryDisputed } from "@/emails/DeliveryDisputed";
 
 // Re-export prop types so callers can import them from a single location
 export type { VerificationSubmittedProps } from "@/emails/VerificationSubmitted";
@@ -25,6 +27,8 @@ export type { MatchAcceptedProps } from "@/emails/MatchAccepted";
 export type { CoordinatorInviteProps } from "@/emails/CoordinatorInvite";
 export type { DriverAssignedProps } from "@/emails/DriverAssigned";
 export type { DriverPickedUpProps } from "@/emails/DriverPickedUp";
+export type { DeliveryAcceptedProps } from "@/emails/DeliveryAccepted";
+export type { DeliveryDisputedProps } from "@/emails/DeliveryDisputed";
 
 export async function renderVerificationSubmitted(
   props: React.ComponentProps<typeof VerificationSubmitted>
@@ -78,4 +82,16 @@ export async function renderDriverPickedUp(
   props: React.ComponentProps<typeof DriverPickedUp>
 ): Promise<string> {
   return await render(React.createElement(DriverPickedUp, props));
+}
+
+export async function renderDeliveryAccepted(
+  props: React.ComponentProps<typeof DeliveryAccepted>
+): Promise<string> {
+  return await render(React.createElement(DeliveryAccepted, props));
+}
+
+export async function renderDeliveryDisputed(
+  props: React.ComponentProps<typeof DeliveryDisputed>
+): Promise<string> {
+  return await render(React.createElement(DeliveryDisputed, props));
 }
