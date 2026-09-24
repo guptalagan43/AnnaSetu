@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
 **Last Updated:** 2026-09-24  
-**Current Status:** 🟡 Phase 09 — Geo-Matching Engine
+**Current Status:** 🟡 Phase 13 — Delivery Receipt & Food Acceptance Checklist
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 12 — Route Optimization (OSRM + Multi-Stop)  
+**Phase:** 13 — Delivery Receipt & Food Acceptance Checklist  
 **File being worked:** (not started)  
-**Last action:** Phase 11 complete — Driver registration (/register/driver), admin driver assignment interface (/admin/listings), POST /api/driver-assignments, real-time driver dashboard (/driver), pickup and deliver endpoints advancing pipeline to checklist, availability toggle, SMTP emails, and 8 tests (49 total tests passing).
+**Last action:** Phase 12 complete — OSRM distance matrix client with Haversine fallback, nearest-neighbor route optimizer enforcing pickup-before-delivery (FR-ROUTE-04) and ERS urgency (FR-ROUTE-05), GET /api/drivers/[id]/route, interactive Leaflet route map (/driver/route/[id]) with numbered stop markers and Google Maps deep-links, driver dashboard integration, 10 routing tests (59 total passing tests).
 
 ---
 
@@ -45,6 +45,7 @@
 | 09 | Geo-Matching Engine | phase-09-matching-engine | — | Haversine distance, match scoring formula (SRS §9.2), 5-10-15km cascade, hard dietary/allergen & capacity exclusions, findAndCreateMatch & rematchListing, /api/matches, 13 tests |
 | 10 | Shelter Dashboard | phase-10-shelter-dashboard | — | Incoming matches sorted by ERS desc, MatchCard with capacity fit indicator, POST /api/matches/[id]/accept (listing matched, shelter load updated, donor notified via SMTP), POST /api/matches/[id]/decline with required reason & rematch cascade, /shelter/capacity page, coordinator invite flow, 11 tests |
 | 11 | Driver Dashboard | phase-11-driver-dashboard | — | Driver registration (/register/driver), admin listings dispatch (/admin/listings), POST /api/driver-assignments, driver dashboard (/driver) with active stops and navigation, PATCH /api/driver-assignments/[id]/pickup, PATCH /api/driver-assignments/[id]/deliver (advancing pipeline matched -> driver_assigned -> in_transit -> checklist), driver availability toggle, SMTP notifications, 8 tests |
+| 12 | Route Optimization | phase-12-route-optimization | — | OSRM client with 3s timeout & Haversine fallback (* 1.35 urban factor), nearest-neighbor optimizer enforcing pickup-before-delivery & ERS >= 70 urgency, GET /api/drivers/[id]/route, interactive Leaflet route map (/driver/route/[id]), numbered stop markers, Google Maps deep-link navigation, cumulative ETAs with 10-min handover buffer, 10 tests |
 
 ---
 
@@ -64,8 +65,8 @@
 | 09 | Geo-Matching Engine | ✅ Complete | phase-09-matching-engine | — | Haversine distance, 5/10/15km cascade, match scoring, exclusions, decline re-matching |
 | 10 | Shelter Dashboard | ✅ Complete | phase-10-shelter-dashboard | — | Match accept/decline UI, countdown timer, shelter capacity tracker, preferences & coordinator invite |
 | 11 | Driver Dashboard | ✅ Complete | phase-11-driver-dashboard | — | Driver registration, assignment, pickup/delivery status pipeline (matched -> driver_assigned -> in_transit -> checklist) |
-| 12 | Route Optimization | 🟡 In Progress | phase-12-route-optimization | — | OSRM client, nearest-neighbor stop ordering, route map, ETAs |
-| 13 | Delivery Checklist | ⬜ Not started | — | — | — |
+| 12 | Route Optimization | ✅ Complete | phase-12-route-optimization | — | OSRM client, nearest-neighbor stop ordering, route map, ETAs, Google Maps deep links |
+| 13 | Delivery Checklist | 🟡 In Progress | phase-13-delivery-checklist | — | 5-point checklist, PIN verification, violation policy enforcement |
 | 14 | Agentic Dispatcher | ⬜ Not started | — | — | — |
 | 15 | CV Intake (Gemini Vision) | ⬜ Not started | — | — | — |
 | 16 | NLP Parser (Gemini Text) | ⬜ Not started | — | — | — |
@@ -130,6 +131,7 @@
 | 2026-09-24 | Phases 00 & 01 merged | Design system components built during scaffold |
 | 2026-09-24 | Consolidated `/app` to `/src/app` | Fix Next.js App Router root conflict preventing compilation of src/app |
 | 2026-09-24 | Lazy BullMQ worker initialization | Avoids blocking test runner and app import when Redis local server is offline |
+| 2026-09-24 | OSRM Table routing with 1.35x Haversine fallback & Nearest-Neighbor pickup-first sequencing | Provides robust real-road routing with offline fallback (25km/h speed, 10-min handover buffer) and hard constraint that pickups precede deliveries |
 
 ---
 
@@ -251,6 +253,13 @@
 - `src/emails/DriverAssigned.tsx` — Brutalist email template for driver dispatch (to driver & shelter)
 - `src/emails/DriverPickedUp.tsx` — Brutalist email template for pickup completion (to donor & shelter)
 - `tests/driver.test.ts` — 8 unit and integration tests covering pipeline transitions, availability toggles, navigation URLs, and email rendering
+
+### Key Source Files (Phase 12)
+- `src/lib/routing/osrm.ts` — OSRM Table and Route client with Haversine * 1.35 urban fallback, nearest-neighbor stop optimizer enforcing pickup-before-delivery (FR-ROUTE-04) and ERS urgency (FR-ROUTE-05), cumulative ETAs & distances
+- `src/app/api/drivers/[id]/route/route.ts` — Optimized multi-stop route endpoint resolving driver/assignment ID and persisting route_stops JSONB
+- `src/components/routing/RouteMap.tsx` — Dynamic Leaflet route map with numbered SVG/HTML divIcon markers, polyline rendering, and stop popups
+- `src/app/(dashboard)/driver/route/[id]/page.tsx` — Driver route view with summary metrics, numbered stop cards, real-time GPS detection, and Google Maps deep-link navigation
+- `tests/routing.test.ts` — 10 unit and integration tests covering OSRM distance matrix, geometry, constraints, and ETAs
 
 ---
 

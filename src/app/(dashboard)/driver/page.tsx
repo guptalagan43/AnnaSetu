@@ -227,6 +227,11 @@ export default function DriverDashboard() {
           >
             {driver?.is_available ? "GO OFFLINE" : "GO ONLINE (AVAILABLE)"}
           </Button>
+          <Link href={`/driver/route/${driver?.id || "me"}`}>
+            <Button variant="secondary" className="font-bold tracking-wider border-2 border-brand-black">
+              🗺️ ROUTE MAP
+            </Button>
+          </Link>
           <Link href="/register/driver">
             <Button variant="ghost" className="border-2 border-brand-black text-xs">
               UPDATE VEHICLE
@@ -295,9 +300,16 @@ export default function DriverDashboard() {
                       </h3>
                       <ERSBadge score={listing.ers_score} size="sm" />
                     </div>
-                    <Badge variant={isPickedUp ? "caution" : "warning"} className="font-mono text-xs">
-                      {isPickedUp ? "IN TRANSIT" : "ASSIGNED"}
-                    </Badge>
+                    <div className="flex items-center gap-3">
+                      <Link href={`/driver/route/${assignment.id}`}>
+                        <Button variant="ghost" size="sm" className="font-mono text-xs font-bold border border-brand-black bg-brand-white">
+                          ROUTE MAP 🗺️
+                        </Button>
+                      </Link>
+                      <Badge variant={isPickedUp ? "caution" : "warning"} className="font-mono text-xs">
+                        {isPickedUp ? "IN TRANSIT" : "ASSIGNED"}
+                      </Badge>
+                    </div>
                   </CardHeader>
 
                   <CardContent className="p-6 space-y-6">
