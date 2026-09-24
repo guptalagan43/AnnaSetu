@@ -15,6 +15,7 @@ import {
   type CreateListingInput,
 } from "@/lib/validators/listing.schema";
 import { CVUploader, type CVResult } from "@/components/listings/CVUploader";
+import { NLPParser, type NLPResult } from "@/components/listings/NLPParser";
 
 // Leaflet location picker loaded client-side only
 const LocationPicker = dynamic(() => import("@/components/verification/LocationPicker"), {
@@ -67,7 +68,7 @@ function NewListingContent() {
   // UI state
   const [loading, setLoading] = useState(false);
   const [cvPhotoUrl, setCvPhotoUrl] = useState<string | null>(null);
-  const [intakeMethod, setIntakeMethod] = useState<"manual" | "cv">("manual");
+  const [intakeMethod, setIntakeMethod] = useState<"manual" | "cv" | "nlp">("manual");
   const [lastListingAvailable, setLastListingAvailable] = useState<boolean>(false);
   const [createdListing, setCreatedListing] = useState<{
     id: string;
@@ -119,6 +120,25 @@ function NewListingContent() {
       setPickupAddress(cleanAddress);
     }
     toast.success("Previous listing copied! Verify pickup & expiry times.");
+  }
+
+  // Apply NLP result — pre-fills form fields from free-text / voice (Phase 16)
+  function handleNLPResult(result: NLPResult) {
+    setIntakeMethod("nlp");
+    if (result.title) setTitle(result.title);
+    if (result.food_category && FOOD_CATEGORIES.includes(result.food_category as typeof FOOD_CATEGORIES[number])) {
+      setFoodCategory(result.food_category);
+    }
+    if (result.estimated_servings !== null && result.estimated_servings > 0) {
+      setEstimatedServings(result.estimated_servings.toString());
+    }
+    if (result.quantity_kg !== null && result.quantity_kg > 0) {
+      setQuantityKg(result.quantity_kg.toString());
+    }
+    if (result.expiry_time) setExpiryTime(toDatetimeLocal(new Date(result.expiry_time)));
+    if (result.allergens && result.allergens.length > 0) setSelectedAllergens(result.allergens);
+    if (result.packaging_type) setPackagingType(result.packaging_type);
+    if (result.notes) setNotes(result.notes);
   }
 
   // Apply CV analysis result — pre-fills form fields (rules.md §5)
@@ -320,6 +340,22 @@ function NewListingContent() {
               onResult={handleCVResult}
               onPhotoUrl={(url) => setCvPhotoUrl(url)}
             />
+          </CardContent>
+        </Card>
+
+        {/* AI Text / Voice Analysis — NLP Intake (Phase 16) */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <h2 className="font-display text-display-sm text-brand-black">🎤 AI TEXT / VOICE PARSER</h2>
+              <span className="font-mono text-xs bg-brand-black text-brand-white px-2 py-0.5">OPTIONAL</span>
+            </div>
+            <p className="font-body text-body-sm text-brand-black/60 mt-1">
+              Type or speak a description like &quot;5kg of biryani expiring at 8pm&quot; and AI will auto-fill the form.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <NLPParser onResult={handleNLPResult} />
           </CardContent>
         </Card>
 

@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
 **Last Updated:** 2026-09-25
-**Current Status:** 🟡 Phase 15 — CV Intake (Gemini Vision)
+**Current Status:** 🟡 Phase 16 — NLP Parser (Gemini Text)
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 15 — CV Intake (Gemini Vision)  
+**Phase:** 16 — NLP Free-Text Parser (Gemini Text)  
 **File being worked:** (starting now)  
-**Last action:** Phase 14 complete — agentic dispatcher with AUTO_CONFIRM_SHELTER (picks nearest auto-confirm shelter via match scoring), ASSIGN_DRIVER (picks nearest available driver), ESCALATE_TO_ADMIN actions; 2-min idempotency guard prevents duplicate cron actions; 5-min shelter opt-out via GET /api/dispatcher/opt-out; AutoConfirmShelter & EscalateToAdmin email templates; BullMQ dispatcher worker; cron route cleaned up; 12 tests (82 total passing).
+**Last action:** Phase 15 complete — POST /api/ai/cv with Gemini Vision + sharp resize to 1024px; CVUploader drag-and-drop component with confidence badge (High/Medium/Low), low-confidence warning, fallback that never blocks listing; Supabase Storage photo upload; form pre-fill wired into new-listing form; intake_method + photo_url tracked on listing; 11 tests (93 total passing).
 
 ---
 
@@ -69,8 +69,8 @@
 | 12 | Route Optimization | ✅ Complete | phase-12-route-optimization | — | OSRM client, nearest-neighbor stop ordering, route map, ETAs, Google Maps deep links |
 | 13 | Delivery Checklist | ✅ Complete | phase-13-delivery-checklist | — | 5-point checklist, PIN verification, violation policy enforcement |
 | 14 | Agentic Dispatcher | ✅ Complete | phase/14-agentic-dispatcher | — | AUTO_CONFIRM_SHELTER, ASSIGN_DRIVER, ESCALATE_TO_ADMIN; 2-min idempotency guard; 5-min opt-out |
-| 15 | CV Intake (Gemini Vision) | 🟡 In Progress | — | — | — |
-| 16 | NLP Parser (Gemini Text) | ⬜ Not started | — | — | — |
+| 15 | CV Intake (Gemini Vision) | ✅ Complete | phase/15-cv-intake | — | Gemini Vision, sharp resize, CVUploader, confidence badge, Storage upload, form pre-fill |
+| 16 | NLP Parser (Gemini Text) | 🟡 In Progress | — | — | — |
 | 17 | Public Impact Dashboard | ⬜ Not started | — | — | — |
 | 18 | Agent Log & Admin Override | ⬜ Not started | — | — | — |
 | 19 | Tax Certificate & Reports | ⬜ Not started | — | — | — |
