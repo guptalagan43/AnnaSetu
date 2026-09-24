@@ -18,128 +18,9 @@ async function verifyCronRequest(request: NextRequest) {
   return true;
 }
 
-async function runERSRecalculation(supabase: ReturnType<typeof createAdminClient>) {
-  console.log("[CRON] Starting ERS recalculation...");
-  
-  // Get all active listings that need ERS recalculation
-  const { data: listings, error } = await supabase
-    .from("listings")
-    .select("id, food_category, expiry_time, pickup_location, donor_id, status, quantity_kg")
-    .in("status", ["listed", "matched", "driver_assigned", "in_transit", "checklist"])
-    .gt("expiry_time", new Date().toISOString());
+import { recalculateAllERS } from "@/lib/queue/workers/ers";
 
-  if (error) {
-    console.error("[CRON] Error fetching listings:", error);
-    return { success: false, error: error.message };
-  }
 
-  let updated = 0;
-  let alertsSent = 0;
-
-  for (const listing of listings || []) {
-    try {
-      const ersScore = calculateERS(listing);
-      
-      // Update ERS score
-      const { error: updateError } = await supabase
-        .from("listings")
-        .update({ 
-          ers_score: ersScore,
-          ers_updated_at: new Date().toISOString()
-        })
-        .eq("id", listing.id);
-
-      if (updateError) {
-        console.error(`[CRON] Error updating ERS for ${listing.id}:`, updateError);
-        continue;
-      }
-
-      updated++;
-
-      // Check for ERS threshold alerts
-      if (ersScore >= 81) {
-        // TODO: Queue escalation email
-        alertsSent++;
-      } else if (ersScore >= 96) {
-        // Auto-expire listing
-        await supabase
-          .from("listings")
-          .update({ status: "expired" })
-          .eq("id", listing.id);
-        
-        // Log waste event
-        await supabase
-          .from("notification_logs")
-          .insert({
-            recipient_id: listing.donor_id,
-            event_type: "listing_expired",
-            listing_id: listing.id,
-            status: "queued"
-          });
-      }
-    } catch (err) {
-      console.error(`[CRON] Error processing listing ${listing.id}:`, err);
-    }
-  }
-
-  console.log(`[CRON] ERS recalculation complete. Updated: ${updated}, Alerts: ${alertsSent}`);
-  return { success: true, updated, alertsSent };
-}
-
-function calculateERS(listing: {
-  food_category: string;
-  expiry_time: string;
-  pickup_location: { coordinates: number[] };
-  quantity_kg?: number | null;
-  status: string;
-}): number {
-  const now = new Date();
-  const expiryTime = new Date(listing.expiry_time);
-  const timeRemainingHours = (expiryTime.getTime() - now.getTime()) / (1000 * 60 * 60);
-
-  if (timeRemainingHours <= 0) return 100;
-
-  // Base safe windows by category (hours)
-  const safeWindows: Record<string, number> = {
-    cooked_meat_fish: 2,
-    dairy_dish: 3,
-    cooked_rice_curry: 4,
-    cooked_pasta: 4,
-    soup_broth: 4,
-    baked_bread: 8,
-    fresh_produce: 12,
-    packaged_sealed: 24,
-    beverage_opened: 6,
-  };
-
-  const maxSafeWindow = safeWindows[listing.food_category] || 4;
-  const baseRisk = Math.max(0, (1 - timeRemainingHours / maxSafeWindow)) * 100;
-
-  // Category multipliers
-  const multipliers: Record<string, number> = {
-    cooked_meat_fish: 2.0,
-    dairy_dish: 1.8,
-    cooked_rice_curry: 1.5,
-    cooked_pasta: 1.4,
-    soup_broth: 1.4,
-    baked_bread: 1.0,
-    fresh_produce: 0.8,
-    packaged_sealed: 0.5,
-    beverage_opened: 0.9,
-  };
-
-  const multiplier = multipliers[listing.food_category] || 1.0;
-  let score = Math.min(100, baseRisk * multiplier);
-
-  // Adjustments
-  if (listing.status === "matched") score -= 10;
-  if (listing.status === "driver_assigned" || listing.status === "in_transit") score -= 20;
-  
-  // Temperature adjustment would need weather API
-  // For now, skip
-
-  return Math.min(100, Math.max(0, Math.round(score)));
-}
 
 async function runDispatcher(supabase: ReturnType<typeof createAdminClient>) {
   console.log("[CRON] Starting agentic dispatcher...");
@@ -248,7 +129,7 @@ export async function GET(request: NextRequest) {
   try {
     switch (job) {
       case "ers":
-        const ersResult = await runERSRecalculation(supabase);
+        const ersResult = await recalculateAllERS();
         return NextResponse.json(ersResult);
       
       case "dispatcher":

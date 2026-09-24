@@ -3,29 +3,9 @@ import { ZodError } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createListingSchema } from "@/lib/validators/listing.schema";
 
-/**
- * Calculates initial Expiry Risk Score (ERS) based on SRS §8.1 / 8.2 formulas.
- * ERS = min(100, base_risk * category_multiplier)
- */
-function calculateInitialERS(category: string, expiryTime: Date, createdAt: Date = new Date()): number {
-  const safeWindows: Record<string, { windowHours: number; multiplier: number }> = {
-    "Cooked meat / fish": { windowHours: 2, multiplier: 2.0 },
-    "Dairy-based dishes": { windowHours: 3, multiplier: 1.8 },
-    "Cooked rice dishes / curries": { windowHours: 4, multiplier: 1.5 },
-    "Cooked pasta / noodles": { windowHours: 4, multiplier: 1.4 },
-    "Soups / broths": { windowHours: 4, multiplier: 1.4 },
-    "Baked goods / bread": { windowHours: 8, multiplier: 1.0 },
-    "Fresh produce": { windowHours: 12, multiplier: 0.8 },
-    "Packaged / sealed items": { windowHours: 24, multiplier: 0.5 },
-    "Beverages (opened)": { windowHours: 6, multiplier: 0.9 },
-  };
-
-  const catConfig = safeWindows[category] || { windowHours: 4, multiplier: 1.2 };
-  const timeRemainingHours = Math.max(0, (expiryTime.getTime() - createdAt.getTime()) / (1000 * 60 * 60));
-  const baseRisk = Math.max(0, Math.min(100, (1 - timeRemainingHours / catConfig.windowHours) * 100));
-  const score = Math.round(Math.min(100, Math.max(0, baseRisk * catConfig.multiplier)));
-  return isNaN(score) ? 25 : score;
-}
+import { calculateERS } from "@/lib/ers/calculator";
+import { cacheListingERS } from "@/lib/ers/cache";
+import { getOutdoorTemperature } from "@/lib/ers/weather";
 
 /**
  * Generates a random 4-digit Donor PIN for chain of custody verification.
@@ -177,10 +157,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Generate 4-digit Donor PIN
     const donorPin = generateDonorPin();
 
-    // Calculate initial ERS score
+    // Calculate initial ERS score with optional weather adjustment
     const now = new Date();
-    const expiryDate = new Date(parsed.expiry_time);
-    const initialErs = calculateInitialERS(parsed.food_category, expiryDate, now);
+    const outdoorTemp = await getOutdoorTemperature(parsed.latitude, parsed.longitude);
+    const ersBreakdown = calculateERS({
+      foodCategory: parsed.food_category,
+      expiryTime: parsed.expiry_time,
+      currentTime: now,
+      status: "listed",
+      outdoorTempCelsius: outdoorTemp,
+    });
+    const initialErs = ersBreakdown.score;
 
     // Format pickup address including optional notes
     const formattedAddress = parsed.notes
@@ -222,6 +209,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       console.error("[Listings POST] Insert error:", insertError);
       return NextResponse.json({ error: "Failed to create listing: " + insertError.message }, { status: 500 });
     }
+
+    // Cache initial ERS in Redis (15-min TTL)
+    await cacheListingERS(listing.id, initialErs, 900);
 
     console.info("[Listings POST] Listing created successfully:", {
       id: listing.id,

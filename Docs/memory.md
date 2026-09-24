@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
 **Last Updated:** 2026-09-24  
-**Current Status:** 🟡 Phase 08 — Expiry Risk Scoring (ERS) Engine
+**Current Status:** 🟡 Phase 09 — Geo-Matching Engine
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 08 — Expiry Risk Scoring (ERS) Engine  
+**Phase:** 09 — Geo-Matching Engine  
 **File being worked:** (not started)  
-**Last action:** Phase 07 complete — Food Listing Form (Manual Intake) at /donor/new-listing, Zod validation schema, POST & GET /api/listings with verified donor guard, 4-digit PIN generation, initial ERS calculation, one-click relist feature, donor dashboard active listings view
+**Last action:** Phase 08 complete — Expiry Risk Scoring (ERS) Engine implemented in src/lib/ers/calculator.ts, weather penalty with OpenWeatherMap, Redis 15-min TTL cache, BullMQ 15-min repeatable cron queue/worker, Vercel cron trigger at /api/webhooks/cron?job=ers, ERSAlert React Email template, listings POST initial ERS calculation, admin map radar with ERS filters, 17 automated tests passing.
 
 ---
 
@@ -41,6 +41,7 @@
 | 05 | Admin Verification Queue | — | — | Admin queue with filters, search, pagination; review page with checklist, approve/reject |
 | 06 | SMTP Email System | phase/06-email-system | — | Nodemailer + BullMQ email queue, Upstash Redis TLS, 4 brutalist React Email templates, verification API integration, /dev/email-preview |
 | 07 | Food Listing Form (Manual) | phase/07-listing-form-manual | — | Under-60s listing form at /donor/new-listing, Zod schema, POST /api/listings with verified guard, 4-digit PIN, one-click relist, real listings on donor dashboard |
+| 08 | ERS Engine | phase-08-ers-engine | — | Live ERS formula in lib/ers/calculator.ts, OpenWeatherMap penalty, Redis 15-min TTL cache, BullMQ worker + 15-min cron, /api/webhooks/cron?job=ers, ERSAlert template, admin map radar, 17 tests |
 
 ---
 
@@ -56,7 +57,7 @@
 | 05 | Admin Verification Queue | ✅ Complete | — | — | Admin queue with filters, search, pagination; review page with checklist, approve/reject |
 | 06 | SMTP Email System | ✅ Complete | phase/06-email-system | — | BullMQ queue, 4 email templates, wired to verification API routes |
 | 07 | Listing Form (Manual) | ✅ Complete | phase/07-listing-form-manual | — | Manual intake form, Zod schema, POST /api/listings, 4-digit PIN, one-click relist, dashboard integration |
-| 08 | ERS Engine | ⬜ Not started | — | — | — |
+| 08 | ERS Engine | ✅ Complete | phase-08-ers-engine | — | ERS calculator, weather factor, Redis cache, BullMQ worker & 15-min cron, ERSAlert email, admin map radar |
 | 09 | Geo-Matching Engine | ⬜ Not started | — | — | — |
 | 10 | Shelter Dashboard | ⬜ Not started | — | — | — |
 | 11 | Driver Dashboard | ⬜ Not started | — | — | — |
@@ -124,6 +125,8 @@
 | 2026-09-24 | OSRM public API for routing | Free, no key required |
 | 2026-09-24 | React 19 with legacy-peer-deps | Some deps not yet compatible with React 19 |
 | 2026-09-24 | Phases 00 & 01 merged | Design system components built during scaffold |
+| 2026-09-24 | Consolidated `/app` to `/src/app` | Fix Next.js App Router root conflict preventing compilation of src/app |
+| 2026-09-24 | Lazy BullMQ worker initialization | Avoids blocking test runner and app import when Redis local server is offline |
 
 ---
 
@@ -203,6 +206,17 @@
 - `src/app/api/listings/route.ts` — Listings API: GET (with status & latest filter) and POST (verified guard, 4-digit PIN, initial ERS, PostGIS EWKT)
 - `src/app/(dashboard)/donor/new-listing/page.tsx` — Food listing form: one-click relist, quick time presets, Leaflet location picker, success PIN screen
 - `src/app/(dashboard)/donor/page.tsx` — Real database integration for donor listings, status badges, PIN display, empty state, and relist button
+
+### Key Source Files (Phase 08)
+- `src/lib/ers/calculator.ts` — Complete ERS formula (SRS §8.1-§8.3): category safe windows, base risk, multipliers, adjustments
+- `src/lib/ers/weather.ts` — OpenWeatherMap temperature penalty integration with 1-hour cache
+- `src/lib/ers/cache.ts` — Upstash Redis listing ERS cache with 15-minute TTL & memory fallback
+- `src/lib/ers/coordinates.ts` — Coordinate parser for PostGIS representations (GeoJSON, WKT, object)
+- `src/lib/queue/ersQueue.ts` — BullMQ queue definition with 15-minute repeatable cron schedule
+- `src/lib/queue/workers/ers.ts` — Background worker for batch recalculations, email escalations, and auto-expirations
+- `src/emails/ERSAlert.tsx` — Brutalist email template for critical/emergency ERS alerts
+- `src/components/listings/ListingCard.tsx` — Reusable listing card with ERS badge and time remaining
+- `tests/ers.test.ts` — 17 unit and integration tests covering ERS calculation, adjustments, triggers, and templates
 
 ---
 

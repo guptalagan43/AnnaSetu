@@ -12,6 +12,7 @@ import {
   renderVerificationApproved,
   renderVerificationRejected,
   renderWelcomeDonor,
+  renderERSAlert,
 } from "@/lib/email/templates";
 
 // Sample data for each template preview
@@ -51,6 +52,19 @@ const SAMPLE_DATA = {
       donorName: "Ravi Sharma",
       businessName: "Spice Garden Restaurant",
       dashboardUrl: "http://localhost:3000/donor",
+    }),
+
+  ers_alert: () =>
+    renderERSAlert({
+      donorName: "Ravi Sharma",
+      listingTitle: "Surplus Chicken Biryani",
+      ersScore: 84,
+      foodCategory: "Cooked rice dishes / curries",
+      quantityKg: 15,
+      servings: 35,
+      expiryTime: new Date(Date.now() + 45 * 60 * 1000).toISOString(),
+      actionUrl: "http://localhost:3000/donor",
+      recipientType: "donor",
     }),
 } as const;
 

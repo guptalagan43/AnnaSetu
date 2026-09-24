@@ -22,6 +22,43 @@
   --shadow-brutal-lg:   8px 8px 0px 0px #0A0A0A;
   --shadow-brutal-hover:6px 6px 0px 0px #0A0A0A;
 
+  --text-display-2xl: 96px;
+  --text-display-2xl--line-height: 0.95;
+  --text-display-2xl--letter-spacing: -0.02em;
+
+  --text-display-xl: 72px;
+  --text-display-xl--line-height: 1;
+  --text-display-xl--letter-spacing: -0.015em;
+
+  --text-display-lg: 56px;
+  --text-display-lg--line-height: 1.05;
+  --text-display-lg--letter-spacing: -0.01em;
+
+  --text-display-md: 42px;
+  --text-display-md--line-height: 1.1;
+  --text-display-md--letter-spacing: -0.01em;
+
+  --text-display-sm: 32px;
+  --text-display-sm--line-height: 1.15;
+  --text-display-sm--letter-spacing: -0.005em;
+
+  --text-body-xl: 20px;
+  --text-body-xl--line-height: 1.5;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.6;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.6;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.5;
+  --text-body-sm--letter-spacing: 0.01em;
+
+  --text-label: 12px;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.08em;
+
   --animate-ers-pulse: ers-pulse 1.2s ease-in-out infinite;
   --animate-ticker:    ticker 30s linear infinite;
   --animate-counter:   counter 1.5s ease-out forwards;

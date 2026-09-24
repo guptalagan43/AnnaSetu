@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -23,7 +23,7 @@ const roleDescriptions: Record<Role, string> = {
   casual_volunteer: "Help with deliveries when available",
 };
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultRole = (searchParams.get("role") as Role) || "donor_admin";
@@ -186,5 +186,13 @@ export default function RegisterPage() {
         </Link>
       </p>
     </form>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center font-display">LOADING...</div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }

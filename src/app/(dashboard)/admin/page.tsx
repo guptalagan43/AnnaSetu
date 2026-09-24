@@ -1,10 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { ERSBadge } from "@/components/ui/ERSBadge";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
+
+const mockMapListings = [
+  { id: "L-101", title: "MG Road Dhaba — Paneer Curry", category: "Dairy-based dishes", servings: 30, location: "MG Road, Bengaluru", lat: 12.9756, lng: 77.6066, ers: 86, status: "unmatched" },
+  { id: "L-102", title: "Green Grocers — Surplus Veg Trays", category: "Fresh produce", servings: 45, location: "Indiranagar, Bengaluru", lat: 12.9784, lng: 77.6408, ers: 64, status: "matched" },
+  { id: "L-103", title: "Campus Canteen — Rice & Dal", category: "Cooked rice dishes / curries", servings: 60, location: "Koramangala, Bengaluru", lat: 12.9352, lng: 77.6245, ers: 92, status: "unmatched" },
+  { id: "L-104", title: "Bakehouse — Whole Wheat Bread", category: "Baked goods / bread", servings: 25, location: "Whitefield, Bengaluru", lat: 12.9698, lng: 77.7499, ers: 35, status: "matched" },
+];
 
 const mockAgentLog = [
   { time: "10:42", action: "AUTO_ASSIGN_DRIVER", listing: "L-042", target: "Priya S.", ers: 84, confidence: 0.92 },
@@ -19,6 +27,14 @@ const mockWasteEvents = [
 ];
 
 export default function AdminDashboard() {
+  const [ersFilter, setErsFilter] = useState<"ALL" | "ERS60" | "ERS80" | "UNMATCHED">("ALL");
+
+  const filteredMapListings = mockMapListings.filter((l) => {
+    if (ersFilter === "ERS60") return l.ers >= 60;
+    if (ersFilter === "ERS80") return l.ers >= 80;
+    if (ersFilter === "UNMATCHED") return l.status === "unmatched";
+    return true;
+  });
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -127,22 +143,80 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Live Listings Map placeholder */}
+        {/* Live Listings Map & ERS Overview */}
         <Card>
-          <CardHeader>
-            <h2 className="font-display text-display-md text-brand-black">LIVE LISTINGS MAP</h2>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div>
+              <h2 className="font-display text-display-md text-brand-black">LIVE LISTINGS MAP & ERS RADAR</h2>
+              <p className="font-body text-body-sm text-brand-black/60">Real-time surplus food tracking with Expiry Risk Scores</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={ersFilter === "ALL" ? "primary" : "ghost"}
+                size="sm"
+                onClick={() => setErsFilter("ALL")}
+              >
+                ALL ({mockMapListings.length})
+              </Button>
+              <Button
+                variant={ersFilter === "ERS60" ? "primary" : "ghost"}
+                size="sm"
+                onClick={() => setErsFilter("ERS60")}
+              >
+                ERS &gt; 60 ({mockMapListings.filter((l) => l.ers >= 60).length})
+              </Button>
+              <Button
+                variant={ersFilter === "ERS80" ? "destructive" : "ghost"}
+                size="sm"
+                onClick={() => setErsFilter("ERS80")}
+              >
+                🔴 CRITICAL &gt; 80 ({mockMapListings.filter((l) => l.ers >= 80).length})
+              </Button>
+              <Button
+                variant={ersFilter === "UNMATCHED" ? "primary" : "ghost"}
+                size="sm"
+                onClick={() => setErsFilter("UNMATCHED")}
+              >
+                UNMATCHED ({mockMapListings.filter((l) => l.status === "unmatched").length})
+              </Button>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="aspect-video bg-brand-black/5 relative overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <p className="font-body text-body-lg text-brand-white/50">MAP PLACEHOLDER</p>
-              </div>
-              <div className="absolute bottom-4 right-4 flex gap-2">
-                <Button variant="ghost" size="sm">ALL</Button>
-<Button variant="primary" size="sm">ERS {'>'}60</Button>
-<Button variant="ghost" size="sm">ERS {'>'}80</Button>
-                <Button variant="ghost" size="sm">UNMATCHED</Button>
-              </div>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredMapListings.map((item) => (
+                <div
+                  key={item.id}
+                  className="border-2 border-brand-black p-4 bg-brand-white flex flex-col justify-between gap-3 shadow-brutal-sm"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h4 className="font-display text-display-sm text-brand-black leading-tight">
+                        {item.title}
+                      </h4>
+                      <p className="font-body text-body-sm text-brand-black/70">
+                        {item.category} · {item.servings} servings
+                      </p>
+                      <p className="font-mono text-xs text-brand-black/60 mt-1">
+                        📍 {item.location}
+                      </p>
+                    </div>
+                    <ERSBadge score={item.ers} size="sm" />
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-brand-black/20 text-xs font-mono">
+                    <span className="uppercase tracking-wider font-bold">
+                      STATUS: {item.status.toUpperCase()}
+                    </span>
+                    <span className="text-brand-black/60">
+                      GPS: {item.lat.toFixed(4)}, {item.lng.toFixed(4)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {filteredMapListings.length === 0 && (
+                <div className="col-span-2 text-center p-8 border-2 border-dashed border-brand-black bg-brand-cream font-mono text-sm">
+                  No active listings meet the filter criteria.
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
