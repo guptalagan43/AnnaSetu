@@ -16,6 +16,8 @@ import { DriverAssigned } from "@/emails/DriverAssigned";
 import { DriverPickedUp } from "@/emails/DriverPickedUp";
 import { DeliveryAccepted } from "@/emails/DeliveryAccepted";
 import { DeliveryDisputed } from "@/emails/DeliveryDisputed";
+import { AutoConfirmShelter } from "@/emails/AutoConfirmShelter";
+import { EscalateToAdmin } from "@/emails/EscalateToAdmin";
 
 // Re-export prop types so callers can import them from a single location
 export type { VerificationSubmittedProps } from "@/emails/VerificationSubmitted";
@@ -29,6 +31,8 @@ export type { DriverAssignedProps } from "@/emails/DriverAssigned";
 export type { DriverPickedUpProps } from "@/emails/DriverPickedUp";
 export type { DeliveryAcceptedProps } from "@/emails/DeliveryAccepted";
 export type { DeliveryDisputedProps } from "@/emails/DeliveryDisputed";
+export type { AutoConfirmShelterProps } from "@/emails/AutoConfirmShelter";
+export type { EscalateToAdminProps } from "@/emails/EscalateToAdmin";
 
 export async function renderVerificationSubmitted(
   props: React.ComponentProps<typeof VerificationSubmitted>
@@ -94,4 +98,16 @@ export async function renderDeliveryDisputed(
   props: React.ComponentProps<typeof DeliveryDisputed>
 ): Promise<string> {
   return await render(React.createElement(DeliveryDisputed, props));
+}
+
+export async function renderAutoConfirmShelter(
+  props: React.ComponentProps<typeof AutoConfirmShelter>
+): Promise<string> {
+  return await render(React.createElement(AutoConfirmShelter, props));
+}
+
+export async function renderEscalateToAdmin(
+  props: React.ComponentProps<typeof EscalateToAdmin>
+): Promise<string> {
+  return await render(React.createElement(EscalateToAdmin, props));
 }
