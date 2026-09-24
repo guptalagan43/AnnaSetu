@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** Completed through Phase 19 (Ready for Phase 20: Seed Data & E2E Testing)  
-**File being worked:** —  
-**Last action:** Phase 19 complete — PDFKit Section 80G tax certificate generator with vector QR verification stamp; GET /api/donors/[id]/certificate PDF streaming route; GET /api/admin/export/impact bulk ESG CSV export; Donor Impact page at /donor/impact with Recharts monthly rescue velocity bar chart, category breakdown, and certificate download; 8 tests passing. Total: 119 tests passing across all phases.
+**Phase:** Phase 21 — Mobile Responsiveness & UI Polish  
+**File being worked:** src/app/layout.tsx, src/app/globals.css, src/app/robots.ts, components  
+**Last action:** Phase 20 complete — scripts/seed.ts with 3 verified donors, 4 shelters, 2 drivers, 5 ERS stage listings, preloaded 48,320 impact meals; full E2E demo test suite validating all 15 email types, < 30s dispatcher timeout, CV biryani photo, and PDF certificate; 24 tests passing. Total: 143 tests passing across all phases.
 
 ---
 
@@ -74,8 +74,8 @@
 | 17 | Public Impact Dashboard | ✅ Complete | phase/17-public-impact-dashboard | — | Live public impact counters, ticker, waste heatmap, GET /api/impact, EPA WARM, 18 tests |
 | 18 | Agent Log & Admin Override | ✅ Complete | phase/18-admin-agent-log | — | Admin agent logs table, override API & modal, reason, SMTP alert, health page, 16 tests |
 | 19 | Tax Certificate & Reports | ✅ Complete | phase/19-tax-certificate | — | PDFKit tax certificate, GET /api/donors/[id]/certificate, donor impact page, CSV export, 8 tests |
-| 20 | Seed Data & E2E Testing | ⬜ Not started | — | — | — |
-| 21 | Mobile Polish | ⬜ Not started | — | — | — |
+| 20 | Seed Data & E2E Testing | ✅ Complete | phase/20-seed-and-test | — | scripts/seed.ts, 15 email templates, compressed 30s dispatcher, e2e test suite, 24 tests |
+| 21 | Mobile Polish | 🟡 In Progress | phase/21-polish | — | Mobile 375px audit, ERS pulse animation, loading skeletons, empty states, robots.txt |
 | 22 | Final Deploy & Demo Prep | ⬜ Not started | — | — | — |
 
 ---
@@ -308,6 +308,11 @@
 - `src/app/api/admin/export/impact/route.ts` — Bulk CSV export endpoint of all donor ESG metrics
 - `src/app/(dashboard)/donor/impact/page.tsx` — Full donor impact analytics page with Recharts monthly rescue velocity bar chart, category breakdown, and certificate download
 - `tests/tax-report.test.ts` — 8 unit tests for financial year calculation, CSV formatting & quote escaping, and PDFKit buffer generation
+
+### Key Source Files (Phase 20)
+- `src/lib/seed/demoData.ts` — Pure seed dataset models: 3 verified donors, 4 shelters, 2 drivers, 5 ERS stage listings, 48,320 impact metrics
+- `scripts/seed.ts` — Standalone idempotent database seeding script for Supabase with dry-run verification
+- `tests/e2e-demo.test.ts` — 24 end-to-end integration tests verifying all 15 email templates, dispatcher timeout compression, CV biryani intake, and PDF certificate generation
 
 ---
 
