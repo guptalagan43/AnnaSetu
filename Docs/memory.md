@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
 **Last Updated:** 2026-09-24  
-**Current Status:** 🟡 Phase 01 — Design System & Base UI
+**Current Status:** 🟡 Phase 02 — Auth System
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 01 — Design System & Base UI  
-**File being worked:** components/ui/*.tsx  
-**Last action:** Phase 00 complete — scaffold & infrastructure ready
+**Phase:** 02 — Auth System  
+**File being worked:** app/(auth)/login/page.tsx, app/(auth)/register/page.tsx, app/api/auth/*  
+**Last action:** Phase 00 & 01 complete — scaffold, design system, auth infrastructure ready
 
 ---
 
@@ -33,7 +33,8 @@
 
 | Phase | Name | Branch | PR | Notes |
 |---|---|---|---|---|
-| 00 | Scaffold & Infrastructure | phase/00-scaffold | — | Next.js 15, Tailwind 4, Supabase schema, Vercel cron, Upstash Redis config, brutalist design system base |
+| 00 | Scaffold & Infrastructure | — | — | Next.js 15, Tailwind 4, Supabase schema, Vercel cron, Upstash Redis config, brutalist design system base |
+| 01 | Design System & Base UI | — | — | All base components (Button, Card, Badge, Modal, Toast, Input, ERSBadge), cn() utility, fonts, landing page, dev preview |
 
 ---
 
@@ -41,9 +42,9 @@
 
 | Phase | Name | Status | Branch | PR | Notes |
 |---|---|---|---|---|---|
-| 00 | Scaffold & Infrastructure | ✅ Complete | phase/00-scaffold | — | All services connected, build passes |
-| 01 | Design System & Base UI | 🟡 In Progress | — | — | Components created, need to verify |
-| 02 | Auth System | ⬜ Not started | — | — | — |
+| 00 | Scaffold & Infrastructure | ✅ Complete | — | — | All services connected, build passes |
+| 01 | Design System & Base UI | ✅ Complete | — | — | All components created and previewable at /dev/components |
+| 02 | Auth System | 🟡 In Progress | phase/02-auth | — | Auth pages, API routes, role-based redirects needed |
 | 03 | Dashboard Shell & Nav | ⬜ Not started | — | — | — |
 | 04 | Donor Verification Form | ⬜ Not started | — | — | — |
 | 05 | Admin Verification Queue | ⬜ Not started | — | — | — |
@@ -116,6 +117,7 @@
 | 2026-09-24 | BullMQ + Upstash Redis for queues | Free tier, Vercel-compatible |
 | 2026-09-24 | OSRM public API for routing | Free, no key required |
 | 2026-09-24 | React 19 with legacy-peer-deps | Some deps not yet compatible with React 19 |
+| 2026-09-24 | Phases 00 & 01 merged | Design system components built during scaffold |
 
 ---
 
@@ -129,7 +131,7 @@
 - `docs/memory.md` — This file
 - `docs/design.md` — Design system & visual spec
 
-### Key Source Files (Phase 00)
+### Key Source Files (Phase 00-01)
 - `package.json` — Dependencies & scripts
 - `tsconfig.json` — TypeScript strict config with path aliases
 - `tailwind.config.ts` — Brutalist design tokens
