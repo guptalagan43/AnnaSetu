@@ -45,11 +45,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-brand-white">
       <MobileSidebarToggle isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={userRole} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       <div className={cn(
         "lg:ml-64 transition-all duration-300",
-        sidebarOpen ? "ml-64" : "ml-0"
+        sidebarOpen ? "ml-0" : "ml-0"
       )}>
         <TopBar 
           userRole={userRole} 
@@ -63,7 +63,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           className="pt-16 lg:pt-16 min-h-screen pb-8"
           role="main"
         >
-          <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
             {children}
           </div>
         </main>

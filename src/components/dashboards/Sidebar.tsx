@@ -42,9 +42,16 @@ const navItems: SidebarItem[] = [
   { label: "LIVE IMPACT", href: "/public-impact", roles: [] },
 ];
 
-export function Sidebar({ userRole }: { userRole: string }) {
+export function Sidebar({ 
+  userRole, 
+  isOpen = false, 
+  onClose 
+}: { 
+  userRole: string; 
+  isOpen?: boolean; 
+  onClose?: () => void; 
+}) {
   const pathname = usePathname();
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
   const filteredItems = navItems.filter(item => 
     item.roles.length === 0 || item.roles.includes(userRole)
@@ -81,19 +88,31 @@ export function Sidebar({ userRole }: { userRole: string }) {
   return (
     <aside 
       className={cn(
-        "fixed top-0 left-0 h-full bg-brand-black text-brand-white z-40 transition-transform duration-300",
-        isMobile ? "w-64 -translate-x-full" : "w-64 translate-x-0",
-        "lg:w-64 lg:translate-x-0"
+        "fixed top-0 left-0 h-full bg-brand-black text-brand-white z-40 transition-transform duration-300 w-64 shadow-brutal-lg lg:shadow-none",
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}
       id="sidebar"
       aria-label="Main navigation"
     >
       <div className="flex flex-col h-full">
         {/* Logo */}
-        <div className="flex items-center gap-4 p-6 border-b-2 border-brand-white/20">
-          <span className="font-display text-2xl tracking-tight">ANNA</span>
-          <span className="w-px h-6 bg-brand-white/50"></span>
-          <span className="font-display text-2xl tracking-tight text-brand-red">SETU</span>
+        <div className="flex items-center justify-between p-6 border-b-2 border-brand-white/20">
+          <div className="flex items-center gap-4">
+            <span className="font-display text-2xl tracking-tight">ANNA</span>
+            <span className="w-px h-6 bg-brand-white/50"></span>
+            <span className="font-display text-2xl tracking-tight text-brand-red">SETU</span>
+          </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="lg:hidden text-brand-white hover:text-brand-red p-1"
+              aria-label="Close menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Navigation */}
@@ -108,6 +127,7 @@ export function Sidebar({ userRole }: { userRole: string }) {
                     <li key={item.href}>
                       <Link
                         href={item.href}
+                        onClick={() => onClose?.()}
                         className={cn(
                           "flex items-center gap-3 px-4 py-3 rounded-none transition-all",
                           isActive
@@ -148,31 +168,13 @@ export function Sidebar({ userRole }: { userRole: string }) {
 }
 
 export function MobileSidebarToggle({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  if (typeof window !== 'undefined' && window.innerWidth >= 1024) return null;
+  if (!isOpen) return null;
   
   return (
-    <>
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-brand-black/50 z-30 lg:hidden"
-          onClick={onClose}
-          aria-hidden="true"
-        />
-      )}
-      <button
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-brand-cream border-2 border-brand-black shadow-brutal"
-        onClick={() => onClose()}
-        aria-label={isOpen ? "Close menu" : "Open menu"}
-        aria-expanded={isOpen}
-      >
-        <svg className="w-6 h-6 text-brand-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          {isOpen ? (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          )}
-        </svg>
-      </button>
-    </>
+    <div 
+      className="fixed inset-0 bg-brand-black/60 z-30 lg:hidden transition-opacity"
+      onClick={onClose}
+      aria-hidden="true"
+    />
   );
 }

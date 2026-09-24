@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { ERSBadge } from "@/components/ui/ERSBadge";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 interface VerificationStatus {
   id: string;
@@ -225,17 +226,12 @@ export default async function DonorDashboard() {
           </div>
 
           {listings.length === 0 ? (
-            <Card className="border-2 border-brand-black p-8 text-center bg-brand-cream space-y-4">
-              <h3 className="font-display text-display-sm text-brand-black">NO LISTINGS YET</h3>
-              <p className="font-body text-body-md text-brand-black/70 max-w-md mx-auto">
-                You have not posted any food listings yet. Take 60 seconds to post your surplus edible food and connect with nearby shelters.
-              </p>
-              <div>
-                <Link href="/donor/new-listing">
-                  <Button variant="primary" size="lg">POST YOUR FIRST LISTING →</Button>
-                </Link>
-              </div>
-            </Card>
+            <EmptyState
+              title="NO LISTINGS POSTED YET"
+              description="You have not posted any food listings yet. Take 60 seconds to post your surplus edible food and connect with nearby shelters."
+              actionText="POST SURPLUS FOOD NOW →"
+              actionHref="/donor/new-listing"
+            />
           ) : (
             <div className="space-y-4">
               {listings.map((listing) => {

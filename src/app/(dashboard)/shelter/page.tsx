@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ERSBadge } from "@/components/ui/ERSBadge";
 import { MatchCard, MatchRecord } from "@/components/matches/MatchCard";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { CardSkeleton } from "@/components/ui/Skeleton";
 import Link from "next/link";
 
 interface ShelterProfile {
@@ -290,19 +292,17 @@ export default function ShelterDashboard() {
         </div>
 
         {isLoading && incomingMatches.length === 0 ? (
-          <div className="p-8 text-center font-mono text-sm text-brand-black/60 border-2 border-dashed border-brand-black/20">
-            CHECKING FOR NEW INCOMING MATCHES...
+          <div className="space-y-4">
+            <CardSkeleton />
+            <CardSkeleton />
           </div>
         ) : sortedIncoming.length === 0 ? (
-          <Card className="border-4 border-brand-black shadow-brutal p-8 text-center bg-brand-cream/50">
-            <p className="font-display text-lg font-bold text-brand-black uppercase">
-              NO PENDING MATCHES RIGHT NOW
-            </p>
-            <p className="font-mono text-xs text-brand-black/60 mt-1 max-w-md mx-auto">
-              Our autonomous geo-matching engine continuously searches for surplus food within 15 km of your shelter.
-              New matches will appear here automatically.
-            </p>
-          </Card>
+          <EmptyState
+            title="NO PENDING MATCHES RIGHT NOW"
+            description="Our autonomous geo-matching engine continuously searches for surplus food within 15 km of your shelter. New matches will appear here automatically."
+            actionText="REFRESH MATCHES"
+            onAction={loadData}
+          />
         ) : (
           <div className="space-y-4">
             {sortedIncoming.map((match) => (

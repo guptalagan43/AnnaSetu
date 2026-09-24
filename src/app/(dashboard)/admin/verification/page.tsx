@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
+import { TableSkeleton } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { format } from "date-fns";
 
 interface Verification {
@@ -178,24 +180,23 @@ export default function AdminVerificationQueuePage() {
       )}
 
       {/* Table */}
-      <Card variant="elevated">
-        <CardContent className="p-0">
-          {loading ? (
-            <div className="py-12 text-center">
-              <div className="font-body text-body-lg text-brand-black/50">Loading verifications…</div>
-            </div>
-          ) : verifications.length === 0 ? (
-            <div className="py-12 text-center">
-              <p className="font-body text-body-lg text-brand-black/50">No verifications found</p>
-              <p className="font-body text-body-sm text-brand-black/40 mt-2">
-                {statusFilter === "pending_review"
-                  ? "No pending applications — great job!"
-                  : `No applications with status "${statusFilter}"`}
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
+      {loading ? (
+        <TableSkeleton rows={5} cols={6} />
+      ) : verifications.length === 0 ? (
+        <EmptyState
+          title="NO VERIFICATIONS FOUND"
+          description={
+            statusFilter === "pending_review"
+              ? "No pending applications currently in queue. All donor submissions have been reviewed."
+              : `No applications found with status "${statusFilter}".`
+          }
+          actionText="REFRESH QUEUE"
+          onAction={fetchVerifications}
+        />
+      ) : (
+        <Card variant="elevated">
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
                 <table className="w-full data-table">
                   <thead>
                     <tr>
@@ -304,10 +305,10 @@ export default function AdminVerificationQueuePage() {
                   </div>
                 </div>
               )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

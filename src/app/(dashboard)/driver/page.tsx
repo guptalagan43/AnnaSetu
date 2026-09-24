@@ -6,6 +6,8 @@ import { ERSBadge } from "@/components/ui/ERSBadge";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { CardSkeleton } from "@/components/ui/Skeleton";
 import Link from "next/link";
 
 interface DriverAssignment {
@@ -257,19 +259,17 @@ export default function DriverDashboard() {
         </div>
 
         {isLoading && assignments.length === 0 ? (
-          <div className="p-8 text-center font-mono text-sm text-brand-black/60">
-            CHECKING FOR ASSIGNED RESCUE RUNS...
+          <div className="space-y-4">
+            <CardSkeleton />
+            <CardSkeleton />
           </div>
         ) : activeAssignments.length === 0 ? (
-          <Card className="border-4 border-brand-black shadow-brutal p-8 text-center bg-brand-white">
-            <p className="font-display font-bold text-lg text-brand-black uppercase">
-              NO ACTIVE PICKUPS ASSIGNED
-            </p>
-            <p className="font-mono text-xs text-brand-black/60 mt-1 max-w-md mx-auto">
-              Stay in "ONLINE" status to receive autonomous rescue dispatch assignments.
-              When a shelter accepts a match, our dispatcher will allocate the run to you.
-            </p>
-          </Card>
+          <EmptyState
+            title="NO ACTIVE RESCUE RUNS"
+            description="Stay in ONLINE status to receive autonomous rescue dispatch assignments. When a shelter accepts a match, our dispatcher will allocate the run to you."
+            actionText="REFRESH ASSIGNMENTS"
+            onAction={loadData}
+          />
         ) : (
           <div className="space-y-6">
             {activeAssignments.map((assignment) => {

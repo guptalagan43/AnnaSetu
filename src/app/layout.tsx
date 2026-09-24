@@ -24,18 +24,33 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AnnaSetu — Real-Time Food Rescue Platform",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://annasetu.in"),
+  title: {
+    default: "AnnaSetu — Real-Time Food Rescue Platform",
+    template: "%s | AnnaSetu",
+  },
   description: "Connecting surplus food from businesses to shelters in minutes. Zero waste, zero friction, zero hunger.",
-  keywords: ["food rescue", "food donation", "surplus food", "NGO", "shelter", "food waste", "social impact"],
+  keywords: ["food rescue", "food donation", "surplus food", "NGO", "shelter", "food waste", "social impact", "ERS"],
   authors: [{ name: "AnnaSetu Team" }],
   creator: "AnnaSetu",
   publisher: "AnnaSetu",
-  robots: "index, follow",
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: "AnnaSetu — Real-Time Food Rescue Platform",
-    description: "Connecting surplus food from businesses to shelters in minutes.",
-    type: "website",
+    description: "Connecting surplus food from businesses to shelters in minutes. Zero waste, zero friction, zero hunger.",
+    url: "https://annasetu.in",
     siteName: "AnnaSetu",
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AnnaSetu — Real-Time Food Rescue Platform",
+    description: "Connecting surplus food from businesses to shelters in minutes. Zero waste, zero friction, zero hunger.",
+    creator: "@AnnaSetuRescue",
   },
 };
 
