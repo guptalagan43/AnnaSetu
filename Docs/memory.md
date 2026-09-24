@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
-**Last Updated:** 2026-09-24  
-**Current Status:** 🟡 Phase 14 — Agentic Dispatcher
+**Last Updated:** 2026-09-25
+**Current Status:** 🟡 Phase 15 — CV Intake (Gemini Vision)
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 14 — Agentic Dispatcher  
-**File being worked:** (not started)  
-**Last action:** Phase 13 complete — 5-point physical delivery checklist at /shelter/checklist/[listing_id], 4-digit Donor PIN verification, POST /api/delivery-receipts, pipeline advancement (delivered on pass, disputed on fail), two-strike donor violation policy (strike 1 warning, strike 2 account suspension & active listings cancellation), DeliveryAccepted & DeliveryDisputed email templates, 11 tests (70 total tests passing).
+**Phase:** 15 — CV Intake (Gemini Vision)  
+**File being worked:** (starting now)  
+**Last action:** Phase 14 complete — agentic dispatcher with AUTO_CONFIRM_SHELTER (picks nearest auto-confirm shelter via match scoring), ASSIGN_DRIVER (picks nearest available driver), ESCALATE_TO_ADMIN actions; 2-min idempotency guard prevents duplicate cron actions; 5-min shelter opt-out via GET /api/dispatcher/opt-out; AutoConfirmShelter & EscalateToAdmin email templates; BullMQ dispatcher worker; cron route cleaned up; 12 tests (82 total passing).
 
 ---
 
@@ -68,8 +68,8 @@
 | 11 | Driver Dashboard | ✅ Complete | phase-11-driver-dashboard | — | Driver registration, assignment, pickup/delivery status pipeline (matched -> driver_assigned -> in_transit -> checklist) |
 | 12 | Route Optimization | ✅ Complete | phase-12-route-optimization | — | OSRM client, nearest-neighbor stop ordering, route map, ETAs, Google Maps deep links |
 | 13 | Delivery Checklist | ✅ Complete | phase-13-delivery-checklist | — | 5-point checklist, PIN verification, violation policy enforcement |
-| 14 | Agentic Dispatcher | ⬜ Not started | — | — | — |
-| 15 | CV Intake (Gemini Vision) | ⬜ Not started | — | — | — |
+| 14 | Agentic Dispatcher | ✅ Complete | phase/14-agentic-dispatcher | — | AUTO_CONFIRM_SHELTER, ASSIGN_DRIVER, ESCALATE_TO_ADMIN; 2-min idempotency guard; 5-min opt-out |
+| 15 | CV Intake (Gemini Vision) | 🟡 In Progress | — | — | — |
 | 16 | NLP Parser (Gemini Text) | ⬜ Not started | — | — | — |
 | 17 | Public Impact Dashboard | ⬜ Not started | — | — | — |
 | 18 | Agent Log & Admin Override | ⬜ Not started | — | — | — |

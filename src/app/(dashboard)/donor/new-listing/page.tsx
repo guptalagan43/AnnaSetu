@@ -14,6 +14,7 @@ import {
   ALLERGENS,
   type CreateListingInput,
 } from "@/lib/validators/listing.schema";
+import { CVUploader, type CVResult } from "@/components/listings/CVUploader";
 
 // Leaflet location picker loaded client-side only
 const LocationPicker = dynamic(() => import("@/components/verification/LocationPicker"), {
@@ -65,6 +66,8 @@ function NewListingContent() {
 
   // UI state
   const [loading, setLoading] = useState(false);
+  const [cvPhotoUrl, setCvPhotoUrl] = useState<string | null>(null);
+  const [intakeMethod, setIntakeMethod] = useState<"manual" | "cv">("manual");
   const [lastListingAvailable, setLastListingAvailable] = useState<boolean>(false);
   const [createdListing, setCreatedListing] = useState<{
     id: string;
@@ -116,6 +119,20 @@ function NewListingContent() {
       setPickupAddress(cleanAddress);
     }
     toast.success("Previous listing copied! Verify pickup & expiry times.");
+  }
+
+  // Apply CV analysis result — pre-fills form fields (rules.md §5)
+  function handleCVResult(result: CVResult) {
+    setIntakeMethod("cv");
+    if (result.food_category && FOOD_CATEGORIES.includes(result.food_category as typeof FOOD_CATEGORIES[number])) {
+      setFoodCategory(result.food_category);
+    }
+    if (result.estimated_servings !== null && result.estimated_servings > 0) {
+      setEstimatedServings(result.estimated_servings.toString());
+    }
+    if (result.quantity_kg !== null && result.quantity_kg > 0) {
+      setQuantityKg(result.quantity_kg.toString());
+    }
   }
 
   // Handle One-Click Relist button click
@@ -179,7 +196,8 @@ function NewListingContent() {
         pickup_window_end: new Date(windowEnd).toISOString(),
         expiry_time: new Date(expiryTime).toISOString(),
         notes: notes.trim() || undefined,
-        intake_method: "manual",
+        intake_method: intakeMethod,
+        photo_url: cvPhotoUrl ?? undefined,
       };
 
       const res = await fetch("/api/listings", {
@@ -268,7 +286,7 @@ function NewListingContent() {
             POST SURPLUS FOOD
           </h1>
           <p className="font-body text-body-md text-brand-black/70 mt-1">
-            Manual Intake — Takes under 60 seconds. Matched automatically.
+                      Manual or AI-Assisted Intake — Takes under 60 seconds. Matched automatically.
           </p>
         </div>
 
@@ -285,6 +303,26 @@ function NewListingContent() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* AI Photo Analysis — CV Intake (Phase 15) */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <h2 className="font-display text-display-sm text-brand-black">📷 AI PHOTO ANALYSIS</h2>
+              <span className="font-mono text-xs bg-brand-black text-brand-white px-2 py-0.5">OPTIONAL</span>
+            </div>
+            <p className="font-body text-body-sm text-brand-black/60 mt-1">
+              Upload a food photo and let Gemini Vision auto-fill the form fields below.
+              You can always override any pre-filled value.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <CVUploader
+              onResult={handleCVResult}
+              onPhotoUrl={(url) => setCvPhotoUrl(url)}
+            />
+          </CardContent>
+        </Card>
+
         {/* Section 1: Food Details */}
         <Card>
           <CardHeader>
