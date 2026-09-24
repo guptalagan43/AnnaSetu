@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-brand-black:  #0A0A0A;
+  --color-brand-white:  #F5F0E8;
+  --color-brand-cream:  #EDE8DC;
+  --color-brand-red:    #D42B2B;
+  --color-brand-red-dk: #A01E1E;
+  --color-ers-safe:     #2D8A3E;
+  --color-ers-caution:  #C8961A;
+  --color-ers-warning:  #D4620A;
+  --color-ers-critical: #C4201F;
+  --color-ers-emergency:#1A0A0A;
+
+  --font-display: '"Bebas Neue", Impact, "Arial Black", sans-serif';
+  --font-body:    '"Space Grotesk", Inter, system-ui, sans-serif';
+  --font-mono:    '"JetBrains Mono", "Courier New", monospace';
+
+  --shadow-brutal:      4px 4px 0px 0px #0A0A0A;
+  --shadow-brutal-red:  4px 4px 0px 0px #D42B2B;
+  --shadow-brutal-sm:   2px 2px 0px 0px #0A0A0A;
+  --shadow-brutal-lg:   8px 8px 0px 0px #0A0A0A;
+  --shadow-brutal-hover:6px 6px 0px 0px #0A0A0A;
+
+  --animate-ers-pulse: ers-pulse 1.2s ease-in-out infinite;
+  --animate-ticker:    ticker 30s linear infinite;
+  --animate-counter:   counter 1.5s ease-out forwards;
+
+  @keyframes ers-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.85; transform: scale(1.03); }
+  }
+  @keyframes ticker {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+}
+
+@layer base {
+  :root {
+    --background: #F5F0E8;
+    --foreground: #0A0A0A;
+  }
+
+  * {
+    @apply border-brand-black;
+  }
+
+  body {
+    @apply bg-brand-white text-brand-black font-body antialiased;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .brutal-card {
+    @apply bg-brand-cream border-2 border-brand-black shadow-brutal p-6;
+    @apply transition-transform hover:-translate-y-0.5 hover:shadow-brutal-hover;
+  }
+
+  .btn-primary {
+    @apply bg-brand-red text-brand-white border-2 border-brand-black shadow-brutal-sm
+           px-6 py-3 font-bold uppercase tracking-widest text-sm font-body
+           hover:bg-brand-red-dk active:translate-x-[3px] active:translate-y-[3px] active:shadow-none
+           transition-all;
+  }
+
+  .btn-secondary {
+    @apply bg-brand-black text-brand-white border-2 border-brand-black shadow-brutal-red
+           px-6 py-3 font-bold uppercase tracking-widest text-sm font-body
+           hover:bg-[#1A1A1A] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none
+           transition-all;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-brand-black border-2 border-brand-black
+           px-6 py-3 font-bold uppercase tracking-widest text-sm font-body
+           hover:bg-brand-black hover:text-brand-white transition-all;
+  }
+
+  .input-field {
+    @apply w-full bg-brand-white text-brand-black border-2 border-brand-black
+           px-4 py-3 text-body-md font-body placeholder:text-gray-400
+           focus:outline-none focus:border-brand-red focus:shadow-[2px_2px_0px_0px_#D42B2B]
+           transition-shadow;
+  }
+
+  .ers-badge {
+    @apply inline-flex items-center gap-2 px-4 py-1.5 font-bold uppercase tracking-wider text-sm font-display;
+  }
+
+  .ers-safe      { @apply bg-ers-safe text-brand-white; }
+  .ers-caution   { @apply bg-ers-caution text-brand-white; }
+  .ers-warning   { @apply bg-ers-warning text-brand-white; }
+  .ers-critical  { @apply bg-ers-critical text-brand-white animate-ers-pulse; }
+  .ers-emergency { @apply bg-ers-emergency text-brand-white animate-ers-pulse; }
+
+  .data-table {
+    @apply w-full border-collapse border-2 border-brand-black;
+  }
+
+  .data-table th {
+    @apply bg-brand-black text-brand-white font-display uppercase text-sm p-3 border border-brand-black;
+  }
+
+  .data-table td {
+    @apply p-3 border border-brand-black text-body-md;
+  }
+
+  .data-table tbody tr:nth-child(odd) {
+    @apply bg-brand-cream;
+  }
+
+  .data-table tbody tr:nth-child(even) {
+    @apply bg-brand-white;
+  }
+
+  .data-table tbody tr:hover {
+    @apply bg-brand-white;
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); }
+  .font-body { font-family: var(--font-body); }
+  .font-mono { font-family: var(--font-mono); }
+
+  .text-display-2xl { @apply text-display-2xl font-display; }
+  .text-display-xl { @apply text-display-xl font-display; }
+  .text-display-lg { @apply text-display-lg font-display; }
+  .text-display-md { @apply text-display-md font-display; }
+  .text-display-sm { @apply text-display-sm font-display; }
+
+  .label-text { @apply text-label font-body font-bold uppercase tracking-wider; }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --font-size-display-2xl: 64px;
+    --font-size-display-xl: 48px;
+    --font-size-display-lg: 40px;
+    --font-size-display-md: 32px;
+    --font-size-display-sm: 24px;
+  }
+
+  .brutal-card {
+    @apply p-4;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost {
+    @apply px-4 py-2 text-xs;
+  }
+}

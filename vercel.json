@@ -1,0 +1,39 @@
+{
+  "crons": [
+    {
+      "path": "/api/webhooks/cron?job=ers",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/webhooks/cron?job=dispatcher",
+      "schedule": "*/2 * * * *"
+    },
+    {
+      "path": "/api/webhooks/cron?job=digest",
+      "schedule": "0 8 * * 1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
+}
