@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
 **Last Updated:** 2026-09-24  
-**Current Status:** 🟡 Phase 07 — Food Listing Form (Manual Intake)
+**Current Status:** 🟡 Phase 08 — Expiry Risk Scoring (ERS) Engine
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 07 — Food Listing Form (Manual Intake)  
+**Phase:** 08 — Expiry Risk Scoring (ERS) Engine  
 **File being worked:** (not started)  
-**Last action:** Phase 06 complete — SMTP Email System with Nodemailer + BullMQ queue, Upstash Redis connection, 4 React Email templates (VerificationSubmitted, VerificationApproved, VerificationRejected, WelcomeDonor), wired into verification API routes, dev preview route at /dev/email-preview
+**Last action:** Phase 07 complete — Food Listing Form (Manual Intake) at /donor/new-listing, Zod validation schema, POST & GET /api/listings with verified donor guard, 4-digit PIN generation, initial ERS calculation, one-click relist feature, donor dashboard active listings view
 
 ---
 
@@ -40,6 +40,7 @@
 | 04 | Donor Verification Form | — | — | 4-step form with Leaflet map pin, file upload (Supabase Storage), Zod validation, localStorage draft, POST /api/verification, approve/reject routes, updated donor dashboard |
 | 05 | Admin Verification Queue | — | — | Admin queue with filters, search, pagination; review page with checklist, approve/reject |
 | 06 | SMTP Email System | phase/06-email-system | — | Nodemailer + BullMQ email queue, Upstash Redis TLS, 4 brutalist React Email templates, verification API integration, /dev/email-preview |
+| 07 | Food Listing Form (Manual) | phase/07-listing-form-manual | — | Under-60s listing form at /donor/new-listing, Zod schema, POST /api/listings with verified guard, 4-digit PIN, one-click relist, real listings on donor dashboard |
 
 ---
 
@@ -54,7 +55,7 @@
 | 04 | Donor Verification Form | ✅ Complete | — | 4-step form, Leaflet map, file upload, Zod validation, localStorage draft, API routes |
 | 05 | Admin Verification Queue | ✅ Complete | — | — | Admin queue with filters, search, pagination; review page with checklist, approve/reject |
 | 06 | SMTP Email System | ✅ Complete | phase/06-email-system | — | BullMQ queue, 4 email templates, wired to verification API routes |
-| 07 | Listing Form (Manual) | ⬜ Not started | — | — | — |
+| 07 | Listing Form (Manual) | ✅ Complete | phase/07-listing-form-manual | — | Manual intake form, Zod schema, POST /api/listings, 4-digit PIN, one-click relist, dashboard integration |
 | 08 | ERS Engine | ⬜ Not started | — | — | — |
 | 09 | Geo-Matching Engine | ⬜ Not started | — | — | — |
 | 10 | Shelter Dashboard | ⬜ Not started | — | — | — |
@@ -196,6 +197,12 @@
 - `src/lib/queue/emailQueue.ts` — BullMQ queue instance with exponential backoff & priority
 - `src/lib/queue/workers/email.ts` — BullMQ worker with 3 attempts & Supabase `email_logs` logging
 - `src/app/dev/email-preview/route.ts` — Dev-only HTML preview route for all 4 templates
+
+### Key Source Files (Phase 07)
+- `src/lib/validators/listing.schema.ts` — Zod listing validation schema, food categories, packaging, allergens
+- `src/app/api/listings/route.ts` — Listings API: GET (with status & latest filter) and POST (verified guard, 4-digit PIN, initial ERS, PostGIS EWKT)
+- `src/app/(dashboard)/donor/new-listing/page.tsx` — Food listing form: one-click relist, quick time presets, Leaflet location picker, success PIN screen
+- `src/app/(dashboard)/donor/page.tsx` — Real database integration for donor listings, status badges, PIN display, empty state, and relist button
 
 ---
 

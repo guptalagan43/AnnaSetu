@@ -30,30 +30,44 @@ export interface ToastOptions {
   };
 }
 
+export type ToastInput = string | ToastOptions;
+
+function normalizeOptions(input: ToastInput): ToastOptions {
+  return typeof input === "string" ? { title: input } : input;
+}
+
 export const toast = {
-  success: (options: ToastOptions) => 
-    sonnerToast.success(options.title, {
-      description: options.description,
-      action: options.action,
-    }),
-  
-  error: (options: ToastOptions) => 
-    sonnerToast.error(options.title, {
-      description: options.description,
-      action: options.action,
-    }),
-  
-  warning: (options: ToastOptions) => 
-    sonnerToast.warning(options.title, {
-      description: options.description,
-      action: options.action,
-    }),
-  
-  info: (options: ToastOptions) => 
-    sonnerToast.info(options.title, {
-      description: options.description,
-      action: options.action,
-    }),
+  success: (input: ToastInput) => {
+    const opts = normalizeOptions(input);
+    return sonnerToast.success(opts.title, {
+      description: opts.description,
+      action: opts.action,
+    });
+  },
+
+  error: (input: ToastInput) => {
+    const opts = normalizeOptions(input);
+    return sonnerToast.error(opts.title, {
+      description: opts.description,
+      action: opts.action,
+    });
+  },
+
+  warning: (input: ToastInput) => {
+    const opts = normalizeOptions(input);
+    return sonnerToast.warning(opts.title, {
+      description: opts.description,
+      action: opts.action,
+    });
+  },
+
+  info: (input: ToastInput) => {
+    const opts = normalizeOptions(input);
+    return sonnerToast.info(opts.title, {
+      description: opts.description,
+      action: opts.action,
+    });
+  },
   
   loading: (title: string) => 
     sonnerToast.loading(title),

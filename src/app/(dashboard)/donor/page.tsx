@@ -15,11 +15,6 @@ interface VerificationStatus {
   rejection_reason?: string;
 }
 
-const mockListings = [
-  { id: "1", title: "Biryani × 20", category: "Cooked Rice/Curry", qty: 20, status: "matched", ers: 84, shelter: "Hope Shelter", timeLeft: "42 min" },
-  { id: "2", title: "Bread × 30", category: "Baked / Bread", qty: 30, status: "listed", ers: 43, shelter: "—", timeLeft: "3 hrs 20 min" },
-  { id: "3", title: "Dal × 15", category: "Cooked Rice/Curry", qty: 15, status: "delivered", ers: 28, shelter: "City Food Bank", timeLeft: "—" },
-];
 
 const statusConfig: Record<string, { label: string; variant: "safe" | "caution" | "warning" | "critical" | "emergency" | "default" }> = {
   listed: { label: "LISTED", variant: "caution" },
@@ -138,6 +133,19 @@ export default async function DonorDashboard() {
     businessName = verif?.business_name ?? "";
   }
 
+  // Fetch donor's real listings
+  const { data: dbListings } = await supabase
+    .from("listings")
+    .select("*")
+    .eq("donor_id", userId)
+    .order("created_at", { ascending: false });
+
+  const listings = dbListings ?? [];
+  const activeCount = listings.filter((l) => ["listed", "matched", "driver_assigned", "in_transit"].includes(l.status)).length;
+  const mealsCount = listings.reduce((acc, l) => acc + (l.estimated_servings || 0), 0);
+  const kgCount = listings.reduce((acc, l) => acc + (Number(l.quantity_kg) || 0), 0);
+  const ersAlertsCount = listings.filter((l) => (l.ers_score || 0) >= 80).length;
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -148,7 +156,7 @@ export default async function DonorDashboard() {
           </h1>
           {isVerified ? (
             <p className="font-body text-body-md text-brand-black/60 mt-1">
-              {businessName} · Verified ✅
+              {businessName || "Verified Food Donor"} · Verified ✅
             </p>
           ) : (
             <p className="font-body text-body-md text-brand-black/60 mt-1">
@@ -159,11 +167,13 @@ export default async function DonorDashboard() {
         {isVerified && (
           <div className="flex flex-wrap gap-4">
             <Link href="/donor/new-listing">
-              <Button variant="primary" size="lg">📸 DONATE BY PHOTO</Button>
+              <Button variant="primary" size="lg">➕ POST SURPLUS FOOD</Button>
             </Link>
-            <Link href="/donor/new-listing?mode=manual">
-              <Button variant="secondary">✏️ QUICK FORM</Button>
-            </Link>
+            {listings.length > 0 && (
+              <Link href="/donor/new-listing?relist=last">
+                <Button variant="secondary" size="lg">⚡ RELIST LAST ITEM</Button>
+              </Link>
+            )}
           </div>
         )}
       </header>
@@ -176,25 +186,25 @@ export default async function DonorDashboard() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <Card>
             <CardContent className="text-center">
-              <div className="font-display text-display-xl text-brand-red">3</div>
+              <div className="font-display text-display-xl text-brand-red">{activeCount}</div>
               <div className="label-text text-brand-black/60 mt-1">ACTIVE LISTINGS</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="text-center">
-              <div className="font-display text-display-xl text-brand-red">340</div>
-              <div className="label-text text-brand-black/60 mt-1">MEALS THIS MONTH</div>
+              <div className="font-display text-display-xl text-brand-red">{mealsCount}</div>
+              <div className="label-text text-brand-black/60 mt-1">MEALS LISTED</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="text-center">
-              <div className="font-display text-display-xl text-brand-red">124</div>
+              <div className="font-display text-display-xl text-brand-red">{Math.round(kgCount)}</div>
               <div className="label-text text-brand-black/60 mt-1">KG DIVERTED</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="text-center">
-              <div className="font-display text-display-xl text-brand-red">2</div>
+              <div className="font-display text-display-xl text-brand-red">{ersAlertsCount}</div>
               <div className="label-text text-brand-black/60 mt-1">ERS ALERTS</div>
             </CardContent>
           </Card>
@@ -205,51 +215,80 @@ export default async function DonorDashboard() {
       {isVerified && (
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="font-display text-display-md text-brand-black">ACTIVE LISTINGS</h2>
+            <h2 className="font-display text-display-md text-brand-black">MY FOOD LISTINGS</h2>
             <div className="flex items-center gap-4">
-              <span className="label-text text-brand-black/60">FILTER:</span>
-              <select className="input-field w-auto px-4 py-2 text-sm">
-                <option>ALL</option>
-                <option>URGENT</option>
-                <option>MATCHED</option>
-                <option>DELIVERED</option>
-              </select>
+              <span className="label-text text-brand-black/60">COUNT:</span>
+              <span className="font-mono text-sm font-bold bg-brand-black text-brand-white px-2 py-0.5">
+                {listings.length}
+              </span>
             </div>
           </div>
 
-          <div className="space-y-4">
-            {mockListings.map((listing) => {
-              const config = statusConfig[listing.status];
-              return (
-                <Card key={listing.id} className="overflow-hidden">
-                  <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_1fr_1fr_1fr_auto] gap-4 items-center p-6">
-                    <div>
-                      <h3 className="font-display text-display-sm text-brand-black">{listing.title}</h3>
-                      <p className="font-body text-body-sm text-brand-black/60">{listing.category}</p>
+          {listings.length === 0 ? (
+            <Card className="border-2 border-brand-black p-8 text-center bg-brand-cream space-y-4">
+              <h3 className="font-display text-display-sm text-brand-black">NO LISTINGS YET</h3>
+              <p className="font-body text-body-md text-brand-black/70 max-w-md mx-auto">
+                You have not posted any food listings yet. Take 60 seconds to post your surplus edible food and connect with nearby shelters.
+              </p>
+              <div>
+                <Link href="/donor/new-listing">
+                  <Button variant="primary" size="lg">POST YOUR FIRST LISTING →</Button>
+                </Link>
+              </div>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {listings.map((listing) => {
+                const config = statusConfig[listing.status] ?? statusConfig.listed;
+                const diffMs = new Date(listing.expiry_time).getTime() - Date.now();
+                const hoursLeft = Math.floor(diffMs / (1000 * 60 * 60));
+                const minsLeft = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                const timeRemaining = diffMs > 0 ? `${hoursLeft > 0 ? `${hoursLeft}h ` : ""}${minsLeft}m remaining` : "Expired";
+
+                return (
+                  <Card key={listing.id} className="overflow-hidden">
+                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1.5fr_1fr_1fr_auto] gap-4 items-center p-6">
+                      <div>
+                        <h3 className="font-display text-display-sm text-brand-black">{listing.title}</h3>
+                        <p className="font-body text-body-sm text-brand-black/60">{listing.food_category}</p>
+                        <p className="font-mono text-xs text-brand-black/70 mt-1">
+                          {listing.quantity_kg} kg · {listing.estimated_servings} servings
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-3">
+                          <ERSBadge score={listing.ers_score ?? 0} size="md" />
+                          <span className="font-mono text-xs text-brand-black/70">{timeRemaining}</span>
+                        </div>
+                        <div className="font-mono text-xs text-brand-black/60">
+                          Ready: {new Date(listing.pickup_window_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="label-text text-brand-black/60 mb-1">STATUS</p>
+                        <Badge variant={config.variant}>{config.label}</Badge>
+                      </div>
+
+                      <div>
+                        <p className="label-text text-brand-black/60 mb-1">DONOR PIN</p>
+                        <span className="font-mono text-sm font-bold bg-brand-cream border border-brand-black px-2 py-1">
+                          {listing.donor_pin}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Link href={`/donor/new-listing?relist=${listing.id}`}>
+                          <Button variant="ghost" size="sm" title="Copy to new listing">⚡ RELIST</Button>
+                        </Link>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <ERSBadge score={listing.ers} size="md" />
-                      <span className="font-body text-body-sm text-brand-black/60">{listing.timeLeft} remaining</span>
-                    </div>
-                    <div>
-                      <p className="label-text text-brand-black/60">STATUS</p>
-                      <Badge variant={config.variant}>{config.label}</Badge>
-                    </div>
-                    <div>
-                      <p className="label-text text-brand-black/60">SHELTER</p>
-                      <p className="font-body text-body-md text-brand-black">{listing.shelter}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm">VIEW</Button>
-                      {(listing.status === "listed" || listing.status === "matched") && (
-                        <Button variant="destructive" size="sm">CANCEL</Button>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </section>
       )}
 
