@@ -18,7 +18,44 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = session.user.id;
     const adminSupabase = createAdminClient();
+
+    // Verify user role
+    const { data: profile } = await adminSupabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .single();
+
+    const role = profile?.role ?? "";
+    const isAdmin = ["super_admin", "platform_admin", "moderator"].includes(role);
+    const isShelter = ["shelter_admin", "shelter_coordinator"].includes(role);
+
+    if (!isAdmin && !isShelter) {
+      return NextResponse.json(
+        { error: "Forbidden: Only shelter staff or admins can decline matches" },
+        { status: 403 }
+      );
+    }
+
+    // Parse and validate required reason (Phase 10: requires reason)
+    let reason = "";
+    try {
+      const body = await request.json();
+      if (body && typeof body.reason === "string") {
+        reason = body.reason.trim();
+      }
+    } catch {
+      // Body parse failure
+    }
+
+    if (!reason) {
+      return NextResponse.json(
+        { error: "Decline reason is required" },
+        { status: 400 }
+      );
+    }
 
     // 1. Fetch current match
     const { data: match, error: matchError } = await adminSupabase
@@ -29,14 +66,6 @@ export async function POST(
 
     if (matchError || !match) {
       return NextResponse.json({ error: "Match not found" }, { status: 404 });
-    }
-
-    let reason = "Shelter capacity unavailable";
-    try {
-      const body = await request.json();
-      if (body?.reason) reason = body.reason;
-    } catch {
-      // Reason optional
     }
 
     // 2. Mark this match as declined

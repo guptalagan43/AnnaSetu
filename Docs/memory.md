@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 10 — Shelter Dashboard & Match Accept/Decline  
+**Phase:** 11 — Driver Dashboard & Assignment  
 **File being worked:** (not started)  
-**Last action:** Phase 09 complete — Geo-matching engine implemented with Haversine distance, SRS §9.2 scoring formula, 5/10/15km cascade, dietary/allergen hard exclusions, capacity fit, automated match creation on listing post, rematch on decline, /api/matches, and 13 unit tests (30 total tests passing).
+**Last action:** Phase 10 complete — Shelter dashboard with ERS desc sort, MatchCard component with capacity fit, POST /api/matches/[id]/accept advancing status to matched and sending SMTP to donor, POST /api/matches/[id]/decline with required reason & immediate rematch, /shelter/capacity management page with dietary & allergen rules, coordinator invite flow, and 11 new tests (41 total tests passing).
 
 ---
 
@@ -43,6 +43,7 @@
 | 07 | Food Listing Form (Manual) | phase/07-listing-form-manual | — | Under-60s listing form at /donor/new-listing, Zod schema, POST /api/listings with verified guard, 4-digit PIN, one-click relist, real listings on donor dashboard |
 | 08 | ERS Engine | phase-08-ers-engine | — | Live ERS formula in lib/ers/calculator.ts, OpenWeatherMap penalty, Redis 15-min TTL cache, BullMQ worker + 15-min cron, /api/webhooks/cron?job=ers, ERSAlert template, admin map radar, 17 tests |
 | 09 | Geo-Matching Engine | phase-09-matching-engine | — | Haversine distance, match scoring formula (SRS §9.2), 5-10-15km cascade, hard dietary/allergen & capacity exclusions, findAndCreateMatch & rematchListing, /api/matches, 13 tests |
+| 10 | Shelter Dashboard | phase-10-shelter-dashboard | — | Incoming matches sorted by ERS desc, MatchCard with capacity fit indicator, POST /api/matches/[id]/accept (listing matched, shelter load updated, donor notified via SMTP), POST /api/matches/[id]/decline with required reason & rematch cascade, /shelter/capacity page, coordinator invite flow, 11 tests |
 
 ---
 
@@ -60,8 +61,8 @@
 | 07 | Listing Form (Manual) | ✅ Complete | phase/07-listing-form-manual | — | Manual intake form, Zod schema, POST /api/listings, 4-digit PIN, one-click relist, dashboard integration |
 | 08 | ERS Engine | ✅ Complete | phase-08-ers-engine | — | ERS calculator, weather factor, Redis cache, BullMQ worker & 15-min cron, ERSAlert email, admin map radar |
 | 09 | Geo-Matching Engine | ✅ Complete | phase-09-matching-engine | — | Haversine distance, 5/10/15km cascade, match scoring, exclusions, decline re-matching |
-| 10 | Shelter Dashboard | 🟡 In Progress | phase-10-shelter-dashboard | — | Match accept/decline UI, countdown timer, shelter capacity tracker |
-| 11 | Driver Dashboard | ⬜ Not started | — | — | — |
+| 10 | Shelter Dashboard | ✅ Complete | phase-10-shelter-dashboard | — | Match accept/decline UI, countdown timer, shelter capacity tracker, preferences & coordinator invite |
+| 11 | Driver Dashboard | 🟡 In Progress | phase-11-driver-dashboard | — | Driver registration, assignment, pickup/delivery status pipeline |
 | 12 | Route Optimization | ⬜ Not started | — | — | — |
 | 13 | Delivery Checklist | ⬜ Not started | — | — | — |
 | 14 | Agentic Dispatcher | ⬜ Not started | — | — | — |
@@ -224,6 +225,18 @@
 - `src/app/api/matches/route.ts` — Role-filtered matches list endpoint (Shelter, Donor, Admin) with count and pagination
 - `src/app/api/matches/[id]/decline/route.ts` — Match decline endpoint triggering immediate cascade re-matching (FR-MATCH-05)
 - `tests/matching.test.ts` — 13 unit and integration tests covering distance calculations, hard exclusions, scoring formula, and radius cascade
+
+### Key Source Files (Phase 10)
+- `src/app/(dashboard)/shelter/page.tsx` — Real-time Shelter Dashboard with capacity gauge, incoming matches sorted by ERS desc / distance, scheduled delivery tracking, and auto-poll
+- `src/app/(dashboard)/shelter/capacity/page.tsx` — Storage capacity & load editor, availability toggle, category preference and restriction checklists, coordinator invite form
+- `src/components/matches/MatchCard.tsx` — Reusable brutalist MatchCard with ERSBadge, live capacity fit indicator, accept action, and decline modal with required reason
+- `src/app/api/matches/[id]/accept/route.ts` — Match accept endpoint updating match status, listing status to matched, shelter load, and queuing donor notification email
+- `src/app/api/matches/[id]/decline/route.ts` — Match decline endpoint with strict reason validation and automated rematch cascade
+- `src/app/api/shelter/route.ts` — Shelter configuration GET & PATCH for capacity, load, preferences, restrictions, and availability toggle
+- `src/app/api/shelter/invite/route.ts` — Coordinator invite endpoint generating secure invite link and queuing invitation email
+- `src/emails/MatchAccepted.tsx` — Brutalist email template notifying donor of shelter acceptance
+- `src/emails/CoordinatorInvite.tsx` — Brutalist email template inviting team members as shelter coordinators
+- `tests/shelter.test.ts` — 11 unit and integration tests for capacity fit, decline reason validation, preference enforcement, invite URLs, and email rendering
 
 ---
 

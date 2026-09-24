@@ -107,30 +107,47 @@ export function isHardPreferenceViolated(
 
   // Vegetarian-only checks
   const isVegOnly = restrictions.some((r) =>
-    ["vegetarian only", "veg only", "no meat", "no non-veg", "pure vegetarian"].includes(r)
+    r.includes("vegetarian") || r.includes("veg only") || r.includes("no meat") || r.includes("no non-veg")
   );
-  if (isVegOnly && category.includes("meat")) {
+  if (
+    isVegOnly &&
+    (category.includes("meat") || category.includes("fish") || category.includes("chicken") || category.includes("pork") || category.includes("non-veg"))
+  ) {
     return true;
   }
 
   // Halal-only checks if specified
   const isHalalOnly = restrictions.some((r) => r.includes("halal"));
-  if (isHalalOnly && category.includes("pork")) {
+  if (isHalalOnly && (category.includes("pork") || category.includes("bacon"))) {
     return true;
   }
 
   // Allergen restrictions
   if (listing.allergens && listing.allergens.length > 0) {
+    const stem = (w: string) => w.toLowerCase().trim().replace(/s$/, "");
+
     for (const allergen of listing.allergens) {
-      const lowerAllergen = allergen.toLowerCase();
+      const lowerAllergen = allergen.toLowerCase().trim();
       if (lowerAllergen === "none") continue;
-      const allergenParts = lowerAllergen.split(/[/,]/).map((s) => s.trim());
-      if (
-        restrictions.some((r) =>
-          allergenParts.some((p) => p && (r.includes(p) || p.includes(r)))
-        )
-      ) {
-        return true;
+
+      const allergenTokens = lowerAllergen
+        .split(/[/, -]/)
+        .map(stem)
+        .filter((t) => t.length > 2);
+
+      for (const r of restrictions) {
+        const rTokens = r
+          .split(/[/, -]/)
+          .map(stem)
+          .filter((t) => t.length > 2 && t !== "free" && t !== "only");
+
+        const matches = allergenTokens.some((at) =>
+          rTokens.some((rt) => at === rt || at.includes(rt) || rt.includes(at))
+        );
+
+        if (matches) {
+          return true;
+        }
       }
     }
   }

@@ -13,6 +13,8 @@ import {
   renderVerificationRejected,
   renderWelcomeDonor,
   renderERSAlert,
+  renderMatchAccepted,
+  renderCoordinatorInvite,
 } from "@/lib/email/templates";
 
 // Sample data for each template preview
@@ -65,6 +67,30 @@ const SAMPLE_DATA = {
       expiryTime: new Date(Date.now() + 45 * 60 * 1000).toISOString(),
       actionUrl: "http://localhost:3000/donor",
       recipientType: "donor",
+    }),
+
+  match_accepted: () =>
+    renderMatchAccepted({
+      donorName: "Ravi Sharma",
+      listingTitle: "Surplus Vegetable Biryani Trays",
+      shelterName: "Hope Community Shelter",
+      shelterAddress: "123 Hope Way, Indiranagar, Bengaluru",
+      quantityKg: 20,
+      servings: 50,
+      pickupAddress: "Spice Garden Restaurant, MG Road, Bengaluru",
+      pickupWindowStart: new Date().toISOString(),
+      pickupWindowEnd: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+      viewListingUrl: "http://localhost:3000/donor",
+    }),
+
+  coordinator_invite: () =>
+    renderCoordinatorInvite({
+      inviteeEmail: "priya@hopeshelter.org",
+      shelterName: "Hope Community Shelter",
+      inviterName: "Anil Kumar (Shelter Admin)",
+      role: "Shelter Coordinator",
+      inviteLink: "http://localhost:3000/register?token=sample123&role=shelter_coordinator",
+      expiresInDays: 7,
     }),
 } as const;
 

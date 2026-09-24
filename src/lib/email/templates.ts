@@ -10,6 +10,8 @@ import { VerificationApproved } from "@/emails/VerificationApproved";
 import { VerificationRejected } from "@/emails/VerificationRejected";
 import { WelcomeDonor } from "@/emails/WelcomeDonor";
 import { ERSAlert } from "@/emails/ERSAlert";
+import { MatchAccepted } from "@/emails/MatchAccepted";
+import { CoordinatorInvite } from "@/emails/CoordinatorInvite";
 
 // Re-export prop types so callers can import them from a single location
 export type { VerificationSubmittedProps } from "@/emails/VerificationSubmitted";
@@ -17,6 +19,8 @@ export type { VerificationApprovedProps } from "@/emails/VerificationApproved";
 export type { VerificationRejectedProps } from "@/emails/VerificationRejected";
 export type { WelcomeDonorProps } from "@/emails/WelcomeDonor";
 export type { ERSAlertProps } from "@/emails/ERSAlert";
+export type { MatchAcceptedProps } from "@/emails/MatchAccepted";
+export type { CoordinatorInviteProps } from "@/emails/CoordinatorInvite";
 
 export async function renderVerificationSubmitted(
   props: React.ComponentProps<typeof VerificationSubmitted>
@@ -46,4 +50,16 @@ export async function renderERSAlert(
   props: React.ComponentProps<typeof ERSAlert>
 ): Promise<string> {
   return await render(React.createElement(ERSAlert, props));
+}
+
+export async function renderMatchAccepted(
+  props: React.ComponentProps<typeof MatchAccepted>
+): Promise<string> {
+  return await render(React.createElement(MatchAccepted, props));
+}
+
+export async function renderCoordinatorInvite(
+  props: React.ComponentProps<typeof CoordinatorInvite>
+): Promise<string> {
+  return await render(React.createElement(CoordinatorInvite, props));
 }
