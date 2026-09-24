@@ -6,6 +6,7 @@ import { createListingSchema } from "@/lib/validators/listing.schema";
 import { calculateERS } from "@/lib/ers/calculator";
 import { cacheListingERS } from "@/lib/ers/cache";
 import { getOutdoorTemperature } from "@/lib/ers/weather";
+import { findAndCreateMatch } from "@/lib/matching/engine";
 
 /**
  * Generates a random 4-digit Donor PIN for chain of custody verification.
@@ -213,18 +214,31 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Cache initial ERS in Redis (15-min TTL)
     await cacheListingERS(listing.id, initialErs, 900);
 
+    // Trigger Geo-Matching engine (Phase 09: FR-MATCH-01)
+    let matchData = null;
+    try {
+      const matchResult = await findAndCreateMatch(listing.id);
+      matchData = matchResult.match;
+    } catch (matchErr) {
+      console.warn("[Listings POST] Non-blocking match error:", matchErr);
+    }
+
     console.info("[Listings POST] Listing created successfully:", {
       id: listing.id,
       title: listing.title,
       donor_id: userId,
       ers: initialErs,
       pin: donorPin,
+      matched: !!matchData,
     });
 
     return NextResponse.json(
       {
         data: listing,
-        message: "Food listing created successfully. Matching has begun.",
+        match: matchData,
+        message: matchData
+          ? `Food listing created and matched to ${matchData.shelter_name || "nearby shelter"}.`
+          : "Food listing created successfully. Matching has begun.",
       },
       { status: 201 }
     );

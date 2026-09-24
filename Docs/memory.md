@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 09 — Geo-Matching Engine  
+**Phase:** 10 — Shelter Dashboard & Match Accept/Decline  
 **File being worked:** (not started)  
-**Last action:** Phase 08 complete — Expiry Risk Scoring (ERS) Engine implemented in src/lib/ers/calculator.ts, weather penalty with OpenWeatherMap, Redis 15-min TTL cache, BullMQ 15-min repeatable cron queue/worker, Vercel cron trigger at /api/webhooks/cron?job=ers, ERSAlert React Email template, listings POST initial ERS calculation, admin map radar with ERS filters, 17 automated tests passing.
+**Last action:** Phase 09 complete — Geo-matching engine implemented with Haversine distance, SRS §9.2 scoring formula, 5/10/15km cascade, dietary/allergen hard exclusions, capacity fit, automated match creation on listing post, rematch on decline, /api/matches, and 13 unit tests (30 total tests passing).
 
 ---
 
@@ -42,6 +42,7 @@
 | 06 | SMTP Email System | phase/06-email-system | — | Nodemailer + BullMQ email queue, Upstash Redis TLS, 4 brutalist React Email templates, verification API integration, /dev/email-preview |
 | 07 | Food Listing Form (Manual) | phase/07-listing-form-manual | — | Under-60s listing form at /donor/new-listing, Zod schema, POST /api/listings with verified guard, 4-digit PIN, one-click relist, real listings on donor dashboard |
 | 08 | ERS Engine | phase-08-ers-engine | — | Live ERS formula in lib/ers/calculator.ts, OpenWeatherMap penalty, Redis 15-min TTL cache, BullMQ worker + 15-min cron, /api/webhooks/cron?job=ers, ERSAlert template, admin map radar, 17 tests |
+| 09 | Geo-Matching Engine | phase-09-matching-engine | — | Haversine distance, match scoring formula (SRS §9.2), 5-10-15km cascade, hard dietary/allergen & capacity exclusions, findAndCreateMatch & rematchListing, /api/matches, 13 tests |
 
 ---
 
@@ -58,8 +59,8 @@
 | 06 | SMTP Email System | ✅ Complete | phase/06-email-system | — | BullMQ queue, 4 email templates, wired to verification API routes |
 | 07 | Listing Form (Manual) | ✅ Complete | phase/07-listing-form-manual | — | Manual intake form, Zod schema, POST /api/listings, 4-digit PIN, one-click relist, dashboard integration |
 | 08 | ERS Engine | ✅ Complete | phase-08-ers-engine | — | ERS calculator, weather factor, Redis cache, BullMQ worker & 15-min cron, ERSAlert email, admin map radar |
-| 09 | Geo-Matching Engine | ⬜ Not started | — | — | — |
-| 10 | Shelter Dashboard | ⬜ Not started | — | — | — |
+| 09 | Geo-Matching Engine | ✅ Complete | phase-09-matching-engine | — | Haversine distance, 5/10/15km cascade, match scoring, exclusions, decline re-matching |
+| 10 | Shelter Dashboard | 🟡 In Progress | phase-10-shelter-dashboard | — | Match accept/decline UI, countdown timer, shelter capacity tracker |
 | 11 | Driver Dashboard | ⬜ Not started | — | — | — |
 | 12 | Route Optimization | ⬜ Not started | — | — | — |
 | 13 | Delivery Checklist | ⬜ Not started | — | — | — |
@@ -217,6 +218,12 @@
 - `src/emails/ERSAlert.tsx` — Brutalist email template for critical/emergency ERS alerts
 - `src/components/listings/ListingCard.tsx` — Reusable listing card with ERS badge and time remaining
 - `tests/ers.test.ts` — 17 unit and integration tests covering ERS calculation, adjustments, triggers, and templates
+
+### Key Source Files (Phase 09)
+- `src/lib/matching/engine.ts` — Geo-matching engine: Haversine distance, match scoring formula, cascade (5/10/15km), hard dietary/allergen & capacity exclusions, findAndCreateMatch & rematchListing
+- `src/app/api/matches/route.ts` — Role-filtered matches list endpoint (Shelter, Donor, Admin) with count and pagination
+- `src/app/api/matches/[id]/decline/route.ts` — Match decline endpoint triggering immediate cascade re-matching (FR-MATCH-05)
+- `tests/matching.test.ts` — 13 unit and integration tests covering distance calculations, hard exclusions, scoring formula, and radius cascade
 
 ---
 
