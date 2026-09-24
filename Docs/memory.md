@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
 **Last Updated:** 2026-09-24  
-**Current Status:** 🟡 Phase 03 — Dashboard Shell & Role-Based Navigation
+**Current Status:** 🟡 Phase 05 — Admin Verification Queue
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 03 — Dashboard Shell & Role-Based Navigation  
-**File being worked:** app/(dashboard)/layout.tsx, app/(dashboard)/donor/page.tsx, etc.  
-**Last action:** Phase 00, 01, 02 complete — scaffold, design system, auth system ready
+**Phase:** 05 — Admin Verification Queue  
+**File being worked:** app/(dashboard)/admin/verification/page.tsx  
+**Last action:** Phase 04 complete — 4-step donor verification form, POST /api/verification, approve/reject routes, file upload route, LocationPicker Leaflet component, updated donor dashboard with verification banner
 
 ---
 
@@ -36,6 +36,8 @@
 | 00 | Scaffold & Infrastructure | — | — | Next.js 15, Tailwind 4, Supabase schema, Vercel cron, Upstash Redis config, brutalist design system base |
 | 01 | Design System & Base UI | — | — | All base components (Button, Card, Badge, Modal, Toast, Input, ERSBadge), cn() utility, fonts, landing page, dev preview |
 | 02 | Auth System | — | — | Register/login pages, API routes (register, login, refresh, logout), role-based middleware |
+| 03 | Dashboard Shell & Nav | — | — | Dashboard layout with sidebar, topbar, role-conditional nav, placeholder pages for all 5 dashboards |
+| 04 | Donor Verification Form | — | — | 4-step form with Leaflet map pin, file upload (Supabase Storage), Zod validation, localStorage draft, POST /api/verification, approve/reject routes, updated donor dashboard |
 
 ---
 
@@ -46,8 +48,8 @@
 | 00 | Scaffold & Infrastructure | ✅ Complete | — | — | All services connected, build passes |
 | 01 | Design System & Base UI | ✅ Complete | — | — | All components created and previewable at /dev/components |
 | 02 | Auth System | ✅ Complete | — | — | Auth pages and API routes working |
-| 03 | Dashboard Shell & Nav | 🟡 In Progress | phase/03-dashboard-shell | — | Dashboard layout with role-based nav needed |
-| 04 | Donor Verification Form | ⬜ Not started | — | — | — |
+| 03 | Dashboard Shell & Nav | ✅ Complete | — | — | Dashboard layout with role-based nav, all 5 placeholder dashboards |
+| 04 | Donor Verification Form | ✅ Complete | — | 4-step form, Leaflet map, file upload, Zod validation, localStorage draft, API routes |
 | 05 | Admin Verification Queue | ⬜ Not started | — | — | — |
 | 06 | SMTP Email System | ⬜ Not started | — | — | — |
 | 07 | Listing Form (Manual) | ⬜ Not started | — | — | — |
@@ -132,7 +134,7 @@
 - `docs/memory.md` — This file
 - `docs/design.md` — Design system & visual spec
 
-### Key Source Files (Phase 00-02)
+### Key Source Files (Phase 00-03)
 - `package.json` — Dependencies & scripts
 - `tsconfig.json` — TypeScript strict config with path aliases
 - `tailwind.config.ts` — Brutalist design tokens
@@ -161,13 +163,33 @@
 - `src/app/api/auth/login/route.ts` — Login API
 - `src/app/api/auth/refresh/route.ts` — Token refresh API
 - `src/app/api/auth/logout/route.ts` — Logout API
+- `src/app/api/auth/me/route.ts` — Current user session API
+- `src/app/(dashboard)/layout.tsx` — Dashboard layout with sidebar & topbar
+- `src/app/(dashboard)/donor/page.tsx` — Donor dashboard placeholder
+- `src/app/(dashboard)/shelter/page.tsx` — Shelter dashboard placeholder
+- `src/app/(dashboard)/driver/page.tsx` — Driver dashboard placeholder
+- `src/app/(dashboard)/admin/page.tsx` — Admin dashboard placeholder
+- `src/app/(dashboard)/public-impact/page.tsx` — Public impact dashboard
+- `src/components/dashboards/Sidebar.tsx` — Role-based sidebar navigation
+- `src/components/dashboards/TopBar.tsx` — Top bar with user menu
 - `src/components/ui/Button.tsx` — Brutalist button variants
 - `src/components/ui/Card.tsx` — Card components
 - `src/components/ui/Badge.tsx` — ERS urgency badges
 - `src/components/ui/ERSBadge.tsx` — ERS score badge with pulse
 - `src/components/ui/Input.tsx` — Form input with label/error/hint
 - `src/components/ui/Modal.tsx` — Modal + ConfirmModal
-- `src/components/ui/Toast.tsx` — Sonner wrapper
+### Key Source Files (Phase 04)
+- `src/app/(auth)/register/donor-verify/page.tsx` — 4-step donor verification form
+- `src/app/(auth)/register/donor-verify/layout.tsx` — Wider layout for verification form
+- `src/lib/validators/verification.schema.ts` — Zod schemas for all 4 steps
+- `src/components/verification/LocationPicker.tsx` — Leaflet map pin component (SSR-safe)
+- `src/app/api/verification/route.ts` — GET (admin queue) + POST (submit verification)
+- `src/app/api/verification/[id]/route.ts` — GET single + PATCH (mark under_review)
+- `src/app/api/verification/[id]/approve/route.ts` — Admin approve endpoint
+- `src/app/api/verification/[id]/reject/route.ts` — Admin reject endpoint (requires reason)
+- `src/app/api/upload/route.ts` — Supabase Storage file upload (5MB limit, auth required)
+- `src/app/(dashboard)/donor/page.tsx` — Updated: verification banner, real auth, gated dashboard
+- `package.json` — Added @hookform/resolvers
 
 ---
 
