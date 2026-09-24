@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
 **Last Updated:** 2026-09-25
-**Current Status:** ✅ Phases 14, 15, 16 Complete
+**Current Status:** ✅ Phases 20 & 21 Complete (155 tests passing across 9 test suites)
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** Phase 21 — Mobile Responsiveness & UI Polish  
-**File being worked:** src/app/layout.tsx, src/app/globals.css, src/app/robots.ts, components  
-**Last action:** Phase 20 complete — scripts/seed.ts with 3 verified donors, 4 shelters, 2 drivers, 5 ERS stage listings, preloaded 48,320 impact meals; full E2E demo test suite validating all 15 email types, < 30s dispatcher timeout, CV biryani photo, and PDF certificate; 24 tests passing. Total: 143 tests passing across all phases.
+**Phase:** Phase 22 — Final Deploy, Demo Rehearsal & Documentation  
+**Branch:** `phase/22-final`  
+**Last action:** Phase 20 & 21 complete. Skeletons (`Skeleton`, `CardSkeleton`, `TableSkeleton`, `MetricSkeleton`), `EmptyState`, root & dashboard error boundaries (`src/app/error.tsx`, `src/app/(dashboard)/error.tsx`), loading states (`src/app/loading.tsx`, `src/app/(dashboard)/loading.tsx`), 404 (`src/app/not-found.tsx`), `robots.ts`, dynamic OpenGraph and favicon (`src/app/icon.tsx`, `src/app/opengraph-image.tsx`), responsive mobile navigation drawer, and 12 unit tests passing in `tests/polish.test.ts`. Total: 155 tests passing across 9 test suites.
 
 ---
 
@@ -47,6 +47,14 @@
 | 11 | Driver Dashboard | phase-11-driver-dashboard | — | Driver registration (/register/driver), admin listings dispatch (/admin/listings), POST /api/driver-assignments, driver dashboard (/driver) with active stops and navigation, PATCH /api/driver-assignments/[id]/pickup, PATCH /api/driver-assignments/[id]/deliver (advancing pipeline matched -> driver_assigned -> in_transit -> checklist), driver availability toggle, SMTP notifications, 8 tests |
 | 12 | Route Optimization | phase-12-route-optimization | — | OSRM client with 3s timeout & Haversine fallback (* 1.35 urban factor), nearest-neighbor optimizer enforcing pickup-before-delivery & ERS >= 70 urgency, GET /api/drivers/[id]/route, interactive Leaflet route map (/driver/route/[id]), numbered stop markers, Google Maps deep-link navigation, cumulative ETAs with 10-min handover buffer, 10 tests |
 | 13 | Delivery Checklist | phase-13-delivery-checklist | — | 5-point physical verification, 4-digit Donor PIN verification, POST & GET /api/delivery-receipts, status update to delivered (with impact recording) or disputed, two-strike violation policy (warning on 1st strike, suspension + cancellation on 2nd strike), DeliveryAccepted & DeliveryDisputed emails, 11 tests |
+| 14 | Agentic Dispatcher | phase/14-agentic-dispatcher | — | AUTO_CONFIRM_SHELTER, ASSIGN_DRIVER, ESCALATE_TO_ADMIN; 2-min idempotency guard; 5-min opt-out; 13 tests |
+| 15 | CV Intake | phase/15-cv-intake | — | Gemini Vision multimodal food classifier, sharp pre-processing, CVUploader with confidence badge & image upload, form pre-fill; 21 tests |
+| 16 | NLP Parser | phase/16-nlp-parser | — | Gemini 2.0 Flash text intake, date context injection, SpeechRecognition voice capture, side-by-side verification; 19 tests |
+| 17 | Public Impact Dashboard | phase/17-public-impact-dashboard | — | EPA WARM v15 2.5x CO2e factor, Leaflet heat layer, 30s polling live ticker, /public-impact route; 18 tests |
+| 18 | Agent Log & Admin Override | phase/18-admin-agent-log | — | Dispatcher decision auditing, manual override modal with compensation logic, AgentOverrideAlert SMTP, health telemetry; 16 tests |
+| 19 | Tax Certificate & Impact Reports | phase/19-tax-certificate | — | PDFKit Section 80G tax receipt with vector QR audit stamp, CSV impact export, donor impact analytics with bar chart; 8 tests |
+| 20 | Seed Data & E2E Testing | phase/20-seed-and-test | — | scripts/seed.ts (idempotent upsert of 3 donors, 4 shelters, 2 drivers, 5 ERS stage listings, 48,320 impact meals), all 15 email templates validated, <30s dispatcher timeout test; 24 tests |
+| 21 | Mobile Responsiveness & Polish | phase/21-polish | — | Brutalist skeletons (Card, Table, Metric, List), EmptyState component, root & dashboard error boundaries, loading suspense states, 404 page, robots.txt, dynamic OG/icon, mobile nav audit; 12 tests |
 
 ---
 
@@ -75,8 +83,8 @@
 | 18 | Agent Log & Admin Override | ✅ Complete | phase/18-admin-agent-log | — | Admin agent logs table, override API & modal, reason, SMTP alert, health page, 16 tests |
 | 19 | Tax Certificate & Reports | ✅ Complete | phase/19-tax-certificate | — | PDFKit tax certificate, GET /api/donors/[id]/certificate, donor impact page, CSV export, 8 tests |
 | 20 | Seed Data & E2E Testing | ✅ Complete | phase/20-seed-and-test | — | scripts/seed.ts, 15 email templates, compressed 30s dispatcher, e2e test suite, 24 tests |
-| 21 | Mobile Polish | 🟡 In Progress | phase/21-polish | — | Mobile 375px audit, ERS pulse animation, loading skeletons, empty states, robots.txt |
-| 22 | Final Deploy & Demo Prep | ⬜ Not started | — | — | — |
+| 21 | Mobile Polish | ✅ Complete | phase/21-polish | — | Mobile 375px audit, brutalist skeletons, empty states, error boundaries, loading states, robots.txt, 12 tests |
+| 22 | Final Deploy & Demo Prep | ⬜ Not started | — | — | Ready for Phase 22 |
 
 ---
 
