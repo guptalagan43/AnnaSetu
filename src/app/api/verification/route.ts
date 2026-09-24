@@ -154,6 +154,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .from("donor_verifications")
       .insert({
         user_id: session.user.id,
+        profile_id: session.user.id,
         business_name: parsed.business_name,
         business_type: parsed.business_type,
         contact_person_name: parsed.contact_person_name,
@@ -171,7 +172,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         city: parsed.city,
         state: parsed.state,
         pincode: parsed.pincode,
-        // PostGIS geography point
+        // PostGIS geography point (both location and pickup_location for schema compatibility)
+        location: `SRID=4326;POINT(${parsed.lng} ${parsed.lat})`,
         pickup_location: `SRID=4326;POINT(${parsed.lng} ${parsed.lat})`,
         operating_hours_start: parsed.operating_hours_start,
         operating_hours_end: parsed.operating_hours_end,

@@ -19,8 +19,10 @@ import { DeliveryDisputed } from "@/emails/DeliveryDisputed";
 import { AutoConfirmShelter } from "@/emails/AutoConfirmShelter";
 import { EscalateToAdmin } from "@/emails/EscalateToAdmin";
 import { AgentOverrideAlert } from "@/emails/AgentOverrideAlert";
+import { WeeklyDigest } from "@/emails/WeeklyDigest";
 
 // Re-export prop types so callers can import them from a single location
+export type { WeeklyDigestProps } from "@/emails/WeeklyDigest";
 export type { VerificationSubmittedProps } from "@/emails/VerificationSubmitted";
 export type { VerificationApprovedProps } from "@/emails/VerificationApproved";
 export type { VerificationRejectedProps } from "@/emails/VerificationRejected";
@@ -119,3 +121,10 @@ export async function renderAgentOverrideAlert(
 ): Promise<string> {
   return await render(React.createElement(AgentOverrideAlert, props));
 }
+
+export async function renderWeeklyDigest(
+  props: React.ComponentProps<typeof WeeklyDigest>
+): Promise<string> {
+  return await render(React.createElement(WeeklyDigest, props));
+}
+

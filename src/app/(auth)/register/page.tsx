@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { toast } from "@/components/ui/Toast";
 
-type Role = "donor_admin" | "shelter_admin" | "verified_driver" | "casual_volunteer";
+type Role = "donor_admin" | "shelter_admin" | "shelter_coordinator" | "verified_driver" | "casual_volunteer";
 
 const roleLabels: Record<Role, string> = {
   donor_admin: "Food Donor (Restaurant, Grocery, Caterer, etc.)",
   shelter_admin: "Shelter / NGO / Food Bank",
+  shelter_coordinator: "Shelter Coordinator (Invited Partner Staff)",
   verified_driver: "Verified Volunteer Driver",
   casual_volunteer: "Casual Volunteer",
 };
@@ -19,6 +20,7 @@ const roleLabels: Record<Role, string> = {
 const roleDescriptions: Record<Role, string> = {
   donor_admin: "Post surplus food, track impact, get tax certificates",
   shelter_admin: "Receive donations, manage capacity, coordinate deliveries",
+  shelter_coordinator: "Coordinate incoming rescue runs, log drop-offs, and complete checklists",
   verified_driver: "Pick up and deliver food, optimized routes",
   casual_volunteer: "Help with deliveries when available",
 };
@@ -27,11 +29,12 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultRole = (searchParams.get("role") as Role) || "donor_admin";
+  const prefilledEmail = searchParams.get("email") || "";
   
   const [role, setRole] = useState<Role>(defaultRole);
   const [formData, setFormData] = useState({
     display_name: "",
-    email: "",
+    email: prefilledEmail,
     phone: "",
     password: "",
     confirmPassword: "",

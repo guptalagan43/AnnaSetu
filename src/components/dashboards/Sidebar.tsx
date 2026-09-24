@@ -20,23 +20,17 @@ const navItems: SidebarItem[] = [
   
   // Shelter nav
   { label: "DASHBOARD", href: "/shelter", roles: ["shelter_admin", "shelter_coordinator"] },
-  { label: "INCOMING", href: "/shelter/incoming", roles: ["shelter_admin", "shelter_coordinator"] },
-  { label: "CAPACITY", href: "/shelter/capacity", roles: ["shelter_admin"] },
-  { label: "PREFERENCES", href: "/shelter/preferences", roles: ["shelter_admin"] },
-  { label: "DELIVERIES", href: "/shelter/deliveries", roles: ["shelter_admin", "shelter_coordinator"] },
+  { label: "CAPACITY & PREFS", href: "/shelter/capacity", roles: ["shelter_admin"] },
   
   // Driver nav
-  { label: "DASHBOARD", href: "/driver", roles: ["verified_driver", "casual_volunteer"] },
-  { label: "MY ROUTE", href: "/driver/route", roles: ["verified_driver", "casual_volunteer"] },
-  { label: "AVAILABLE", href: "/driver/available", roles: ["verified_driver"] },
-  { label: "HISTORY", href: "/driver/history", roles: ["verified_driver", "casual_volunteer"] },
+  { label: "DASHBOARD & RUNS", href: "/driver", roles: ["verified_driver", "casual_volunteer"] },
   
   // Admin nav
   { label: "OVERVIEW", href: "/admin", roles: ["super_admin", "platform_admin", "moderator"] },
   { label: "VERIFICATION", href: "/admin/verification", roles: ["super_admin", "platform_admin", "moderator"] },
   { label: "LISTINGS", href: "/admin/listings", roles: ["super_admin", "platform_admin", "moderator"] },
   { label: "AGENT LOG", href: "/admin/agent-log", roles: ["super_admin", "platform_admin", "moderator"] },
-  { label: "METRICS", href: "/admin/metrics", roles: ["super_admin", "platform_admin"] },
+  { label: "SYSTEM HEALTH", href: "/admin/health", roles: ["super_admin", "platform_admin"] },
   
   // Public
   { label: "LIVE IMPACT", href: "/public-impact", roles: [] },

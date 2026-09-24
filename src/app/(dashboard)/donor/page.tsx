@@ -314,7 +314,9 @@ export default async function DonorDashboard() {
               </div>
             </div>
             <div className="mt-6 text-center">
-              <Button variant="secondary">DOWNLOAD MONTHLY TAX CERTIFICATE (PDF)</Button>
+              <Link href="/donor/impact">
+                <Button variant="secondary">VIEW FULL IMPACT & DOWNLOAD TAX CERTIFICATE (PDF) →</Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

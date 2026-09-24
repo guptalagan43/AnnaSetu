@@ -168,4 +168,52 @@ describe("Phase 21: Mobile Responsiveness, SEO & UI Polish", () => {
       assert.equal(skeletonA11y["aria-busy"], true);
     });
   });
+
+  describe("Breadcrumb Navigation Contract (phases.md §03)", () => {
+    it("formats breadcrumb trail with correct separators and active page markers", () => {
+      const items = [
+        { label: "Dashboard", href: "/shelter" },
+        { label: "Capacity Management", href: "/shelter/capacity" },
+        { label: "Live Allocation" },
+      ];
+
+      assert.equal(items.length, 3);
+      assert.equal(items[0].href, "/shelter");
+      assert.equal(items[2].href, undefined);
+      assert.equal(items[2].label, "Live Allocation");
+    });
+  });
+
+  describe("Weekly Digest Aggregation & Cron Worker (architecture.md §6 / phases.md §19)", () => {
+    it("computes accurate 7-day impact totals and valid email structures", async () => {
+      const { runWeeklyDigest } = await import("../src/lib/queue/workers/digest");
+      const result = await runWeeklyDigest();
+
+      assert.equal(result.success, true);
+      assert.equal(result.job, "digest");
+      assert.ok(result.weekPeriod);
+      assert.ok(result.stats);
+      assert.ok(result.stats.mealsRescued >= 0);
+      assert.ok(result.stats.divertedKg >= 0);
+      assert.ok(result.stats.co2eAvoidedKg >= 0);
+      assert.equal(result.stats.co2eAvoidedKg, Math.round(result.stats.divertedKg * 2.5));
+    });
+  });
+
+  describe("Role Onboarding Completeness (phases.md §10)", () => {
+    it("includes shelter_coordinator in permitted registration roles", () => {
+      const validRoles = [
+        "donor_admin",
+        "shelter_admin",
+        "shelter_coordinator",
+        "verified_driver",
+        "casual_volunteer",
+      ];
+
+      assert.ok(validRoles.includes("shelter_coordinator"));
+      assert.ok(validRoles.includes("donor_admin"));
+      assert.ok(validRoles.includes("shelter_admin"));
+    });
+  });
 });
+

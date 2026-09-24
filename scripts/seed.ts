@@ -61,6 +61,9 @@ async function main() {
 
       await supabase.from("donor_verifications").upsert(
         {
+          id: donor.id,
+          profile_id: donor.id,
+          user_id: donor.id,
           donor_id: donor.id,
           business_name: donor.businessName,
           business_type: donor.businessType,
@@ -70,7 +73,7 @@ async function main() {
           reviewed_at: new Date().toISOString(),
           reviewed_by: SEED_ADMIN.id,
         },
-        { onConflict: "donor_id" }
+        { onConflict: "id" }
       );
     }
 
@@ -80,12 +83,15 @@ async function main() {
       await supabase.from("shelters").upsert(
         {
           id: shelter.id,
+          profile_id: shelter.id,
           name: shelter.name,
           address: shelter.address,
           location: `SRID=4326;POINT(${shelter.lng} ${shelter.lat})`,
+          capacity_kg: shelter.capacityKg,
           total_capacity_kg: shelter.capacityKg,
           current_load_kg: shelter.currentLoadKg,
           accepts_auto_confirm: shelter.acceptsAutoConfirm,
+          status: shelter.isActive ? "active" : "unavailable",
           is_active: shelter.isActive,
           contact_email: shelter.email,
           contact_phone: shelter.phone,
@@ -114,6 +120,7 @@ async function main() {
           id: driver.id,
           profile_id: driver.id,
           vehicle_type: driver.vehicleType,
+          is_available: driver.isOnline,
           is_online: driver.isOnline,
           is_verified: driver.isVerified,
           current_location: `SRID=4326;POINT(${driver.lng} ${driver.lat})`,

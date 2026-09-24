@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { recalculateAllERS } from "@/lib/queue/workers/ers";
 import { runDispatcherAgent } from "@/lib/dispatcher/agent";
+import { runWeeklyDigest } from "@/lib/queue/workers/digest";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 
@@ -47,9 +48,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         return NextResponse.json(dispatcherResult);
       }
 
-      case "digest":
-        // Weekly digest — Phase 19 placeholder
-        return NextResponse.json({ success: true, message: "Digest job triggered" });
+      case "digest": {
+        const digestResult = await runWeeklyDigest();
+        return NextResponse.json(digestResult);
+      }
 
       default:
         return NextResponse.json({ error: "Invalid job parameter" }, { status: 400 });

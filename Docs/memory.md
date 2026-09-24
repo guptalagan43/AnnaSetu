@@ -322,6 +322,17 @@
 - `scripts/seed.ts` — Standalone idempotent database seeding script for Supabase with dry-run verification
 - `tests/e2e-demo.test.ts` — 24 end-to-end integration tests verifying all 15 email templates, dispatcher timeout compression, CV biryani intake, and PDF certificate generation
 
+### Key Source Files (Phase 21 & Audit Remediation)
+- `src/components/ui/Skeleton.tsx` & `src/components/ui/EmptyState.tsx` — Brutalist skeleton loaders and zero-state CTA blocks
+- `src/components/ui/Breadcrumb.tsx` — Reusable brutalist breadcrumb trail with monospace uppercase hierarchy
+- `src/app/unauthorized/page.tsx` — 403 restricted access route handler for `requireRole` redirects
+- `src/app/(dashboard)/profile/page.tsx` & `src/app/(dashboard)/settings/page.tsx` — User identity badges & notification preferences
+- `src/components/dashboards/Sidebar.tsx` — Resolved navigation routes with redirects for legacy subpaths
+- `src/emails/WeeklyDigest.tsx` — React Email template for weekly 7-day food rescue summaries
+- `src/lib/queue/workers/digest.ts` — Weekly impact aggregation worker with lazy BullMQ queue and resilience fallbacks
+- `scripts/schema.sql` & `supabase/migrations/20260924000000_init_schema.sql` — Synced PostGIS schema with `full_name`, `user_id`/`profile_id`, and `pickup_location` compatibility
+- `tests/polish.test.ts` — 15 unit and integration tests for responsive breakpoints, ERS pulse, SEO robots, breadcrumbs, and weekly digests
+
 ---
 
 ## 🎯 Demo Checklist (Final Verification Before Presentation)
