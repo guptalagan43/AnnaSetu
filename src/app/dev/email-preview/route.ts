@@ -15,6 +15,8 @@ import {
   renderERSAlert,
   renderMatchAccepted,
   renderCoordinatorInvite,
+  renderDriverAssigned,
+  renderDriverPickedUp,
 } from "@/lib/email/templates";
 
 // Sample data for each template preview
@@ -91,6 +93,37 @@ const SAMPLE_DATA = {
       role: "Shelter Coordinator",
       inviteLink: "http://localhost:3000/register?token=sample123&role=shelter_coordinator",
       expiresInDays: 7,
+    }),
+
+  driver_assigned: () =>
+    renderDriverAssigned({
+      recipientName: "Priya Sharma",
+      recipientRole: "driver",
+      listingTitle: "Surplus Cooked Vegetable Biryani",
+      foodCategory: "Cooked rice dishes / curries",
+      quantityKg: 25,
+      servings: 60,
+      ersScore: 78,
+      pickupAddress: "Spice Garden Restaurant, MG Road, Bengaluru",
+      dropoffAddress: "123 Hope Way, Indiranagar, Bengaluru",
+      shelterName: "Hope Community Shelter",
+      donorName: "Spice Garden Restaurant",
+      actionUrl: "http://localhost:3000/driver",
+    }),
+
+  driver_picked_up: () =>
+    renderDriverPickedUp({
+      recipientName: "Ravi Sharma",
+      recipientRole: "donor",
+      listingTitle: "Surplus Cooked Vegetable Biryani",
+      foodCategory: "Cooked rice dishes / curries",
+      quantityKg: 25,
+      servings: 60,
+      driverName: "Priya Sharma (Motorcycle)",
+      pickedUpAt: new Date().toISOString(),
+      destinationName: "Hope Community Shelter",
+      destinationAddress: "123 Hope Way, Indiranagar, Bengaluru",
+      actionUrl: "http://localhost:3000/donor",
     }),
 } as const;
 

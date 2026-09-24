@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 11 — Driver Dashboard & Assignment  
+**Phase:** 12 — Route Optimization (OSRM + Multi-Stop)  
 **File being worked:** (not started)  
-**Last action:** Phase 10 complete — Shelter dashboard with ERS desc sort, MatchCard component with capacity fit, POST /api/matches/[id]/accept advancing status to matched and sending SMTP to donor, POST /api/matches/[id]/decline with required reason & immediate rematch, /shelter/capacity management page with dietary & allergen rules, coordinator invite flow, and 11 new tests (41 total tests passing).
+**Last action:** Phase 11 complete — Driver registration (/register/driver), admin driver assignment interface (/admin/listings), POST /api/driver-assignments, real-time driver dashboard (/driver), pickup and deliver endpoints advancing pipeline to checklist, availability toggle, SMTP emails, and 8 tests (49 total tests passing).
 
 ---
 
@@ -44,6 +44,7 @@
 | 08 | ERS Engine | phase-08-ers-engine | — | Live ERS formula in lib/ers/calculator.ts, OpenWeatherMap penalty, Redis 15-min TTL cache, BullMQ worker + 15-min cron, /api/webhooks/cron?job=ers, ERSAlert template, admin map radar, 17 tests |
 | 09 | Geo-Matching Engine | phase-09-matching-engine | — | Haversine distance, match scoring formula (SRS §9.2), 5-10-15km cascade, hard dietary/allergen & capacity exclusions, findAndCreateMatch & rematchListing, /api/matches, 13 tests |
 | 10 | Shelter Dashboard | phase-10-shelter-dashboard | — | Incoming matches sorted by ERS desc, MatchCard with capacity fit indicator, POST /api/matches/[id]/accept (listing matched, shelter load updated, donor notified via SMTP), POST /api/matches/[id]/decline with required reason & rematch cascade, /shelter/capacity page, coordinator invite flow, 11 tests |
+| 11 | Driver Dashboard | phase-11-driver-dashboard | — | Driver registration (/register/driver), admin listings dispatch (/admin/listings), POST /api/driver-assignments, driver dashboard (/driver) with active stops and navigation, PATCH /api/driver-assignments/[id]/pickup, PATCH /api/driver-assignments/[id]/deliver (advancing pipeline matched -> driver_assigned -> in_transit -> checklist), driver availability toggle, SMTP notifications, 8 tests |
 
 ---
 
@@ -62,8 +63,8 @@
 | 08 | ERS Engine | ✅ Complete | phase-08-ers-engine | — | ERS calculator, weather factor, Redis cache, BullMQ worker & 15-min cron, ERSAlert email, admin map radar |
 | 09 | Geo-Matching Engine | ✅ Complete | phase-09-matching-engine | — | Haversine distance, 5/10/15km cascade, match scoring, exclusions, decline re-matching |
 | 10 | Shelter Dashboard | ✅ Complete | phase-10-shelter-dashboard | — | Match accept/decline UI, countdown timer, shelter capacity tracker, preferences & coordinator invite |
-| 11 | Driver Dashboard | 🟡 In Progress | phase-11-driver-dashboard | — | Driver registration, assignment, pickup/delivery status pipeline |
-| 12 | Route Optimization | ⬜ Not started | — | — | — |
+| 11 | Driver Dashboard | ✅ Complete | phase-11-driver-dashboard | — | Driver registration, assignment, pickup/delivery status pipeline (matched -> driver_assigned -> in_transit -> checklist) |
+| 12 | Route Optimization | 🟡 In Progress | phase-12-route-optimization | — | OSRM client, nearest-neighbor stop ordering, route map, ETAs |
 | 13 | Delivery Checklist | ⬜ Not started | — | — | — |
 | 14 | Agentic Dispatcher | ⬜ Not started | — | — | — |
 | 15 | CV Intake (Gemini Vision) | ⬜ Not started | — | — | — |
@@ -237,6 +238,19 @@
 - `src/emails/MatchAccepted.tsx` — Brutalist email template notifying donor of shelter acceptance
 - `src/emails/CoordinatorInvite.tsx` — Brutalist email template inviting team members as shelter coordinators
 - `tests/shelter.test.ts` — 11 unit and integration tests for capacity fit, decline reason validation, preference enforcement, invite URLs, and email rendering
+
+### Key Source Files (Phase 11)
+- `src/app/(dashboard)/driver/page.tsx` — Real-time Driver Dashboard with active route cards, pickup/delivery confirmation buttons, navigation links, and online/offline toggle
+- `src/app/register/driver/page.tsx` — Zero-friction volunteer driver signup with vehicle selection (bike, scooter, auto, car, van) and phone
+- `src/app/(dashboard)/admin/listings/page.tsx` — Admin donation listings monitor and driver dispatch interface
+- `src/app/api/drivers/route.ts` — Driver profile fetch & registration API
+- `src/app/api/drivers/availability/route.ts` — Driver online/offline status toggle endpoint
+- `src/app/api/driver-assignments/route.ts` — Assignment creation and role-filtered list API
+- `src/app/api/driver-assignments/[id]/pickup/route.ts` — Status update to picked_up (advancing listing to in_transit) + SMTP notifications
+- `src/app/api/driver-assignments/[id]/deliver/route.ts` — Status update to delivered (advancing listing to checklist)
+- `src/emails/DriverAssigned.tsx` — Brutalist email template for driver dispatch (to driver & shelter)
+- `src/emails/DriverPickedUp.tsx` — Brutalist email template for pickup completion (to donor & shelter)
+- `tests/driver.test.ts` — 8 unit and integration tests covering pipeline transitions, availability toggles, navigation URLs, and email rendering
 
 ---
 
