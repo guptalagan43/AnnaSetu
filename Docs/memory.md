@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
 **Last Updated:** 2026-09-24  
-**Current Status:** 🟡 Phase 02 — Auth System
+**Current Status:** 🟡 Phase 03 — Dashboard Shell & Role-Based Navigation
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 02 — Auth System  
-**File being worked:** app/(auth)/login/page.tsx, app/(auth)/register/page.tsx, app/api/auth/*  
-**Last action:** Phase 00 & 01 complete — scaffold, design system, auth infrastructure ready
+**Phase:** 03 — Dashboard Shell & Role-Based Navigation  
+**File being worked:** app/(dashboard)/layout.tsx, app/(dashboard)/donor/page.tsx, etc.  
+**Last action:** Phase 00, 01, 02 complete — scaffold, design system, auth system ready
 
 ---
 
@@ -35,6 +35,7 @@
 |---|---|---|---|---|
 | 00 | Scaffold & Infrastructure | — | — | Next.js 15, Tailwind 4, Supabase schema, Vercel cron, Upstash Redis config, brutalist design system base |
 | 01 | Design System & Base UI | — | — | All base components (Button, Card, Badge, Modal, Toast, Input, ERSBadge), cn() utility, fonts, landing page, dev preview |
+| 02 | Auth System | — | — | Register/login pages, API routes (register, login, refresh, logout), role-based middleware |
 
 ---
 
@@ -44,8 +45,8 @@
 |---|---|---|---|---|---|
 | 00 | Scaffold & Infrastructure | ✅ Complete | — | — | All services connected, build passes |
 | 01 | Design System & Base UI | ✅ Complete | — | — | All components created and previewable at /dev/components |
-| 02 | Auth System | 🟡 In Progress | phase/02-auth | — | Auth pages, API routes, role-based redirects needed |
-| 03 | Dashboard Shell & Nav | ⬜ Not started | — | — | — |
+| 02 | Auth System | ✅ Complete | — | — | Auth pages and API routes working |
+| 03 | Dashboard Shell & Nav | 🟡 In Progress | phase/03-dashboard-shell | — | Dashboard layout with role-based nav needed |
 | 04 | Donor Verification Form | ⬜ Not started | — | — | — |
 | 05 | Admin Verification Queue | ⬜ Not started | — | — | — |
 | 06 | SMTP Email System | ⬜ Not started | — | — | — |
@@ -131,7 +132,7 @@
 - `docs/memory.md` — This file
 - `docs/design.md` — Design system & visual spec
 
-### Key Source Files (Phase 00-01)
+### Key Source Files (Phase 00-02)
 - `package.json` — Dependencies & scripts
 - `tsconfig.json` — TypeScript strict config with path aliases
 - `tailwind.config.ts` — Brutalist design tokens
@@ -153,13 +154,20 @@
 - `src/app/dev/layout.tsx` — Dev section layout
 - `src/app/dev/components/page.tsx` — Component library preview
 - `src/app/api/webhooks/cron/route.ts` — Vercel cron handler (ERS + dispatcher)
-- `src/components/ui/Button.tsx` — Brutalist button variants (primary/secondary/ghost/destructive)
-- `src/components/ui/Card.tsx` — Card, CardHeader, CardContent, CardFooter
-- `src/components/ui/Badge.tsx` — ERS urgency badges (safe/caution/warning/critical/emergency)
-- `src/components/ui/ERSBadge.tsx` — ERS score badge with pulse animation
+- `src/app/(auth)/layout.tsx` — Auth layout wrapper
+- `src/app/(auth)/login/page.tsx` — Login page
+- `src/app/(auth)/register/page.tsx` — Register page with role selection
+- `src/app/api/auth/register/route.ts` — Registration API
+- `src/app/api/auth/login/route.ts` — Login API
+- `src/app/api/auth/refresh/route.ts` — Token refresh API
+- `src/app/api/auth/logout/route.ts` — Logout API
+- `src/components/ui/Button.tsx` — Brutalist button variants
+- `src/components/ui/Card.tsx` — Card components
+- `src/components/ui/Badge.tsx` — ERS urgency badges
+- `src/components/ui/ERSBadge.tsx` — ERS score badge with pulse
 - `src/components/ui/Input.tsx` — Form input with label/error/hint
-- `src/components/ui/Modal.tsx` — Modal + ConfirmModal with brutalist styling
-- `src/components/ui/Toast.tsx` — Sonner wrapper styled to match design
+- `src/components/ui/Modal.tsx` — Modal + ConfirmModal
+- `src/components/ui/Toast.tsx` — Sonner wrapper
 
 ---
 
