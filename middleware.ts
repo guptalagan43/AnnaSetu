@@ -63,16 +63,26 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
+  const localToken =
+    request.cookies.get("sb-access-token")?.value ||
+    request.cookies.get("annasetu-token")?.value;
+
+  const isAuthenticated = Boolean(session || localToken);
+
   // Protected dashboard routes
-  if (pathname.startsWith("/donor") || pathname.startsWith("/shelter") || pathname.startsWith("/driver") || pathname.startsWith("/admin")) {
-    if (!session) {
+  if (
+    pathname.startsWith("/donor") ||
+    pathname.startsWith("/shelter") ||
+    pathname.startsWith("/driver") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/settings")
+  ) {
+    if (!isAuthenticated) {
       const redirectUrl = new URL("/login", request.url);
       redirectUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(redirectUrl);
     }
-
-    // Role-based access control could be added here
-    // For now, we just check if user is authenticated
   }
 
   return response;

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { authenticateLocalUser } from "@/lib/auth/localStore";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,57 +14,101 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createAdminClient();
+    const hasSupabase = Boolean(
+      process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      !process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")
+    );
 
-    // Sign in with Supabase
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // 1. Try Supabase Auth if live project is configured
+    if (hasSupabase) {
+      try {
+        const supabase = createAdminClient();
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-    if (error || !data.user || !data.session) {
+        if (!error && data?.user && data?.session) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role, display_name")
+            .eq("id", data.user.id)
+            .single();
+
+          const userRole = profile?.role || "donor_admin";
+          const response = NextResponse.json({
+            user: {
+              id: data.user.id,
+              email: data.user.email,
+              role: userRole,
+              display_name: profile?.display_name || "",
+            },
+            session: {
+              access_token: data.session.access_token,
+              refresh_token: data.session.refresh_token,
+              expires_at: data.session.expires_at,
+            },
+          });
+
+          response.cookies.set("sb-access-token", data.session.access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 7,
+            path: "/",
+          });
+
+          response.cookies.set("annasetu-token", data.session.access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 7,
+            path: "/",
+          });
+
+          return response;
+        }
+      } catch (sbErr) {
+        console.warn("[Auth Login] Supabase unavailable, checking local store:", sbErr);
+      }
+    }
+
+    // 2. Local & Demo Authentication Fallback
+    const authResult = authenticateLocalUser(email, password);
+
+    if (!authResult) {
       return NextResponse.json(
         { error: "Invalid email or password" },
         { status: 401 }
       );
     }
 
-    // Get user profile for role
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role, display_name")
-      .eq("id", data.user.id)
-      .single();
-
-    // Create response with session cookies
+    const { user, token } = authResult;
     const response = NextResponse.json({
       user: {
-        id: data.user.id,
-        email: data.user.email,
-        role: profile?.role || "donor_staff",
-        display_name: profile?.display_name || "",
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        display_name: user.display_name,
       },
       session: {
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token,
-        expires_at: data.session.expires_at,
+        access_token: token,
       },
     });
 
-    // Set cookies
-    response.cookies.set("sb-access-token", data.session.access_token, {
+    response.cookies.set("sb-access-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60, // 1 hour
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
-    
-    response.cookies.set("sb-refresh-token", data.session.refresh_token, {
+
+    response.cookies.set("annasetu-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
 

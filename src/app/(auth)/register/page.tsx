@@ -73,8 +73,17 @@ function RegisterForm() {
         throw new Error(data.error || "Registration failed");
       }
 
-      toast.success({ title: "Account created!", description: "Please check your email to verify your account." });
-      router.push("/login?registered=true");
+      toast.success({ title: "Account created!", description: "Welcome to AnnaSetu! Opening your dashboard..." });
+
+      let destination = "/donor";
+      if (role === "shelter_admin" || role === "shelter_coordinator") {
+        destination = "/shelter";
+      } else if (role === "verified_driver" || role === "casual_volunteer") {
+        destination = "/driver";
+      }
+
+      router.push(destination);
+      router.refresh();
     } catch (error) {
       toast.error({ 
         title: "Registration failed", 

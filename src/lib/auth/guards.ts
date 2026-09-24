@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { verifyAuthToken } from "./localStore";
 
 export type UserRole = 
   | "super_admin"
@@ -26,46 +27,76 @@ export interface UserSession {
 
 export async function getSession(): Promise<UserSession> {
   const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
+  const token =
+    cookieStore.get("sb-access-token")?.value ||
+    cookieStore.get("annasetu-token")?.value;
+
+  // 1. Try local/demo JWT token first
+  if (token) {
+    const decoded = verifyAuthToken(token);
+    if (decoded && decoded.role) {
+      return {
+        user: {
+          id: decoded.id,
+          email: decoded.email,
+          role: decoded.role as UserRole,
         },
-        set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          cookieStore.set({ name, value: "", ...options });
-        },
-      },
+      };
     }
-  );
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session?.user) {
-    return { user: null };
   }
 
-  // Get user profile with role
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", session.user.id)
-    .single();
+  // 2. Try Supabase SSR if configured
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const hasSupabase = Boolean(supabaseUrl && !supabaseUrl.includes("placeholder"));
 
-  return {
-    user: {
-      id: session.user.id,
-      email: session.user.email!,
-      role: profile?.role as UserRole || "donor_staff",
-    },
-  };
+  if (hasSupabase) {
+    try {
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            get(name: string) {
+              return cookieStore.get(name)?.value;
+            },
+            set(name: string, value: string, options: CookieOptions) {
+              try {
+                cookieStore.set({ name, value, ...options });
+              } catch {}
+            },
+            remove(name: string, options: CookieOptions) {
+              try {
+                cookieStore.set({ name, value: "", ...options });
+              } catch {}
+            },
+          },
+        }
+      );
+
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        // Get user profile with role
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", session.user.id)
+          .single();
+
+        return {
+          user: {
+            id: session.user.id,
+            email: session.user.email!,
+            role: (profile?.role as UserRole) || "donor_staff",
+          },
+        };
+      }
+    } catch (sbErr) {
+      console.warn("[Auth Guard] Supabase session check failed:", sbErr);
+    }
+  }
+
+  return { user: null };
 }
 
 export function requireRole(allowedRoles: UserRole[]) {
