@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { queueEmail } from "@/lib/queue/emailQueue";
+import { renderVerificationApproved, renderWelcomeDonor } from "@/lib/email/templates";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -43,7 +45,7 @@ export async function POST(request: NextRequest, { params }: RouteParams): Promi
     // Fetch the verification to make sure it exists and is in an approvable state
     const { data: verification, error: fetchError } = await supabase
       .from("donor_verifications")
-      .select("id, status, user_id, business_name, contact_email")
+      .select("id, status, user_id, business_name, business_type, contact_email, contact_person_name, fssai_number")
       .eq("id", id)
       .single();
 
@@ -94,8 +96,46 @@ export async function POST(request: NextRequest, { params }: RouteParams): Promi
       approved_by: adminProfile.display_name,
     });
 
-    // ponytail: email queuing deferred to Phase 06 (email system)
-    // TODO: queue VerificationApproved email to verification.contact_email
+    // Queue VerificationApproved + WelcomeDonor emails (Phase 06)
+    // Runs after DB commit; never throws — email failure must not fail the response
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://annasetu.vercel.app";
+    (async () => {
+      const [approvedHtml, welcomeHtml] = await Promise.all([
+        renderVerificationApproved({
+          donorName: verification.contact_person_name ?? "Donor",
+          businessName: verification.business_name,
+          businessType: verification.business_type ?? "",
+          fssaiNumber: verification.fssai_number ?? "",
+          reviewedAt: new Date().toISOString(),
+          reviewedBy: adminProfile.display_name ?? "AnnaSetu Admin",
+          loginUrl: `${appUrl}/login`,
+        }),
+        renderWelcomeDonor({
+          donorName: verification.contact_person_name ?? "Donor",
+          businessName: verification.business_name,
+          dashboardUrl: `${appUrl}/donor`,
+        }),
+      ]);
+
+      await Promise.all([
+        queueEmail({
+          to: verification.contact_email,
+          subject: "✅ Your AnnaSetu verification has been approved",
+          html: approvedHtml,
+          priority: "high",
+          metadata: { userId: verification.user_id, eventType: "verification_approved" },
+        }),
+        queueEmail({
+          to: verification.contact_email,
+          subject: "Welcome to AnnaSetu — here's how to get started",
+          html: welcomeHtml,
+          priority: "normal",
+          metadata: { userId: verification.user_id, eventType: "welcome_donor" },
+        }),
+      ]);
+    })().catch((err) => {
+      console.error("[Approve] Email queue error (non-fatal):", err);
+    });
 
     return NextResponse.json({
       data: {

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { z, ZodError } from "zod";
+import { queueEmail } from "@/lib/queue/emailQueue";
+import { renderVerificationRejected } from "@/lib/email/templates";
 
 const rejectBodySchema = z.object({
   rejection_reason: z.string().min(10, "Please provide a reason of at least 10 characters"),
@@ -43,7 +45,7 @@ export async function POST(request: NextRequest, { params }: RouteParams): Promi
     // Fetch the verification
     const { data: verification, error: fetchError } = await supabase
       .from("donor_verifications")
-      .select("id, status, user_id, business_name, contact_email")
+      .select("id, status, user_id, business_name, contact_email, contact_person_name")
       .eq("id", id)
       .single();
 
@@ -84,8 +86,25 @@ export async function POST(request: NextRequest, { params }: RouteParams): Promi
       reason: rejection_reason,
     });
 
-    // ponytail: email queuing deferred to Phase 06 (email system)
-    // TODO: queue VerificationRejected email to verification.contact_email with rejection_reason
+    // Queue VerificationRejected email (Phase 06) — high priority, never throws
+    (async () => {
+      const html = await renderVerificationRejected({
+        donorName: verification.contact_person_name ?? "Donor",
+        businessName: verification.business_name,
+        rejectionReason: rejection_reason,
+        reviewedAt: new Date().toISOString(),
+      });
+
+      await queueEmail({
+        to: verification.contact_email,
+        subject: "Update on your AnnaSetu donor verification application",
+        html,
+        priority: "high",
+        metadata: { userId: verification.user_id, eventType: "verification_rejected" },
+      });
+    })().catch((err) => {
+      console.error("[Reject] Email queue error (non-fatal):", err);
+    });
 
     return NextResponse.json({
       data: {

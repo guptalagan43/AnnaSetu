@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { verificationSchema } from "@/lib/validators/verification.schema";
 import { ZodError } from "zod";
+import { queueEmail } from "@/lib/queue/emailQueue";
+import { renderVerificationSubmitted } from "@/lib/email/templates";
 
 // GET /api/verification — list all verifications (admin only)
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -193,6 +195,31 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       user_id: session.user.id,
       business: parsed.business_name,
     });
+
+    // Notify admin of new verification submission (Phase 06) — non-fatal
+    const adminEmail = process.env.ADMIN_EMAIL ?? process.env.SMTP_USER ?? "";
+    if (adminEmail) {
+      (async () => {
+        const html = await renderVerificationSubmitted({
+          adminName: "Admin",
+          businessName: parsed.business_name,
+          businessType: parsed.business_type,
+          contactEmail: parsed.contact_email,
+          fssaiNumber: parsed.fssai_number,
+          submittedAt: new Date().toISOString(),
+        });
+
+        await queueEmail({
+          to: adminEmail,
+          subject: `🔔 New verification request: ${parsed.business_name}`,
+          html,
+          priority: "high",
+          metadata: { userId: session.user.id, eventType: "verification_submitted" },
+        });
+      })().catch((err) => {
+        console.error("[Verification POST] Admin email queue error (non-fatal):", err);
+      });
+    }
 
     return NextResponse.json(
       {

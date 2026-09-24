@@ -1,7 +1,7 @@
 # Memory — AnnaSetu Progress Tracker
 **Repository:** https://github.com/guptalagan43/annasetu  
 **Last Updated:** 2026-09-24  
-**Current Status:** 🟡 Phase 05 — Admin Verification Queue
+**Current Status:** 🟡 Phase 07 — Food Listing Form (Manual Intake)
 
 > Update this file at the END of every phase and at the START of every working session.  
 > Format: check off tasks as they complete. Add notes on blockers, decisions made, or deviations.
@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** 06 — SMTP Email System  
+**Phase:** 07 — Food Listing Form (Manual Intake)  
 **File being worked:** (not started)  
-**Last action:** Phase 05 complete — Admin verification queue page with filtering, pagination, search; individual review page with full application details, document links, 12-item admin checklist (from SRS §5.4), phone verification notes, approve/reject actions with validation
+**Last action:** Phase 06 complete — SMTP Email System with Nodemailer + BullMQ queue, Upstash Redis connection, 4 React Email templates (VerificationSubmitted, VerificationApproved, VerificationRejected, WelcomeDonor), wired into verification API routes, dev preview route at /dev/email-preview
 
 ---
 
@@ -38,6 +38,8 @@
 | 02 | Auth System | — | — | Register/login pages, API routes (register, login, refresh, logout), role-based middleware |
 | 03 | Dashboard Shell & Nav | — | — | Dashboard layout with sidebar, topbar, role-conditional nav, placeholder pages for all 5 dashboards |
 | 04 | Donor Verification Form | — | — | 4-step form with Leaflet map pin, file upload (Supabase Storage), Zod validation, localStorage draft, POST /api/verification, approve/reject routes, updated donor dashboard |
+| 05 | Admin Verification Queue | — | — | Admin queue with filters, search, pagination; review page with checklist, approve/reject |
+| 06 | SMTP Email System | phase/06-email-system | — | Nodemailer + BullMQ email queue, Upstash Redis TLS, 4 brutalist React Email templates, verification API integration, /dev/email-preview |
 
 ---
 
@@ -51,7 +53,7 @@
 | 03 | Dashboard Shell & Nav | ✅ Complete | — | — | Dashboard layout with role-based nav, all 5 placeholder dashboards |
 | 04 | Donor Verification Form | ✅ Complete | — | 4-step form, Leaflet map, file upload, Zod validation, localStorage draft, API routes |
 | 05 | Admin Verification Queue | ✅ Complete | — | — | Admin queue with filters, search, pagination; review page with checklist, approve/reject |
-| 06 | SMTP Email System | ⬜ Not started | — | — | — |
+| 06 | SMTP Email System | ✅ Complete | phase/06-email-system | — | BullMQ queue, 4 email templates, wired to verification API routes |
 | 07 | Listing Form (Manual) | ⬜ Not started | — | — | — |
 | 08 | ERS Engine | ⬜ Not started | — | — | — |
 | 09 | Geo-Matching Engine | ⬜ Not started | — | — | — |
@@ -181,6 +183,19 @@
 ### Key Source Files (Phase 05)
 - `src/app/(dashboard)/admin/verification/page.tsx` — Admin verification queue with filtering, search, pagination
 - `src/app/(dashboard)/admin/verification/[id]/page.tsx` — Individual review page with checklist, document links, approve/reject actions
+
+### Key Source Files (Phase 06)
+- `src/lib/email/mailer.ts` — Nodemailer SMTP transport setup
+- `src/lib/email/templates.ts` — Central async email template render helpers
+- `src/emails/BaseEmail.tsx` — Brutalist base email layout
+- `src/emails/VerificationSubmitted.tsx` — New verification application admin alert
+- `src/emails/VerificationApproved.tsx` — Donor verification approval notification
+- `src/emails/VerificationRejected.tsx` — Donor verification rejection with reason
+- `src/emails/WelcomeDonor.tsx` — Post-approval onboarding with 3-step guide
+- `src/lib/queue/redis.ts` — Redis connection config for BullMQ with Upstash Redis TLS support
+- `src/lib/queue/emailQueue.ts` — BullMQ queue instance with exponential backoff & priority
+- `src/lib/queue/workers/email.ts` — BullMQ worker with 3 attempts & Supabase `email_logs` logging
+- `src/app/dev/email-preview/route.ts` — Dev-only HTML preview route for all 4 templates
 
 ---
 
