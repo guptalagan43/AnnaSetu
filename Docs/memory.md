@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** — (all three phases complete)  
-**File being worked:** —  
-**Last action:** Phase 16 complete — POST /api/ai/nlp with Gemini Text + date context for relative time parsing ("expiring at 8pm"); NLPParser component with textarea + browser SpeechRecognition voice input; side-by-side raw/parsed view with confidence badge; medium-confidence warning; fallback puts raw text in notes field; intake_method tracks nlp; schema constants deduplicated from listing.schema; 18 tests. Total: 111 tests passing across all phases.
+**Phase:** Phase 18 — Agent Log & Admin Override Panel  
+**File being worked:** src/app/(dashboard)/admin/agent-log/page.tsx, src/app/api/admin/agent-log/route.ts  
+**Last action:** Phase 17 complete — Public Impact Dashboard at /public-impact (no auth required), live animated counters for meals, kg diverted, CO2e (EPA WARM 2.5x factor), active network participants; live 5-delivery marquee ticker; Leaflet + leaflet.heat geospatial heatmap with heat/pins toggle; GET /api/impact route with 30s auto-polling; 18 tests passing. Total: 95 tests passing across all phases.
 
 ---
 
@@ -71,8 +71,8 @@
 | 14 | Agentic Dispatcher | ✅ Complete | phase/14-agentic-dispatcher | — | AUTO_CONFIRM_SHELTER, ASSIGN_DRIVER, ESCALATE_TO_ADMIN; 2-min idempotency guard; 5-min opt-out |
 | 15 | CV Intake (Gemini Vision) | ✅ Complete | phase/15-cv-intake | — | Gemini Vision, sharp resize, CVUploader, confidence badge, Storage upload, form pre-fill |
 | 16 | NLP Parser (Gemini Text) | ✅ Complete | phase/16-nlp-parser | — | Gemini Text, date context, NLPParser, voice input (SpeechRecognition), side-by-side view, fallback |
-| 17 | Public Impact Dashboard | ⬜ Not started | — | — | — |
-| 18 | Agent Log & Admin Override | ⬜ Not started | — | — | — |
+| 17 | Public Impact Dashboard | ✅ Complete | phase/17-public-impact-dashboard | — | Live public impact counters, ticker, waste heatmap, GET /api/impact, EPA WARM, 18 tests |
+| 18 | Agent Log & Admin Override | 🟡 In Progress | phase/18-admin-agent-log | — | Admin agent logs table, override API & modal, reason, SMTP alert |
 | 19 | Tax Certificate & Reports | ⬜ Not started | — | — | — |
 | 20 | Seed Data & E2E Testing | ⬜ Not started | — | — | — |
 | 21 | Mobile Polish | ⬜ Not started | — | — | — |
@@ -269,7 +269,29 @@
 - `src/app/(dashboard)/shelter/checklist/[listing_id]/page.tsx` — Shelter delivery acceptance checklist interface with 5-point physical verification, PIN input, and dispute submission
 - `src/emails/DeliveryAccepted.tsx` — Brutalist email template confirming rescue completion with food rescued, meals served, and CO2e avoided metrics
 - `src/emails/DeliveryDisputed.tsx` — Brutalist email template for warning notice (strike 1) and account suspension notice (strike 2)
-- `tests/checklist.test.ts` — 11 unit and integration tests covering 5-point criteria, PIN verification, status pipeline transitions, violation policy, and email rendering
+### Key Source Files (Phase 14)
+- `src/lib/dispatcher/agent.ts` — Agentic Dispatcher with AUTO_CONFIRM_SHELTER, ASSIGN_DRIVER, ESCALATE_TO_ADMIN, 2-min idempotency guard
+- `src/app/api/dispatcher/opt-out/route.ts` — 5-minute shelter opt-out reversal endpoint
+- `src/emails/AutoConfirmShelter.tsx` — Email template for shelter auto-confirmation with opt-out link
+- `src/emails/EscalateToAdmin.tsx` — Email template for critical dispatcher escalation
+- `tests/dispatcher.test.ts` — 12 unit and integration tests for dispatcher logic, timeouts, and rules
+
+### Key Source Files (Phase 15)
+- `src/app/api/ai/cv/route.ts` — Gemini Vision CV intake with sharp image resize, 1000-token budget, Supabase Storage upload
+- `src/components/listings/CVUploader.tsx` — Drag-and-drop food photo intake with live confidence tier badge
+- `tests/cv.test.ts` — 11 unit tests for CV output schema, confidence tiers, warnings, and fallback
+
+### Key Source Files (Phase 16)
+- `src/app/api/ai/nlp/route.ts` — Gemini Text NLP parser with date context for relative time calculation, 500-token budget
+- `src/components/listings/NLPParser.tsx` — Natural language description textarea + SpeechRecognition voice input and side-by-side verification
+- `tests/nlp.test.ts` — 18 unit tests for NLP parsing, validation, relative times, and fallback
+
+### Key Source Files (Phase 17)
+- `src/lib/impact/calculator.ts` — Pure EPA WARM CO2e calculator (2.5x factor), meal estimator, relative time formatter, and hotspot normalizer
+- `src/app/api/impact/route.ts` — Public GET /api/impact route aggregating totals, network size, recent activity, and geospatial hotspots
+- `src/components/impact/ImpactHeatmap.tsx` — Leaflet + leaflet.heat geospatial heatmap with heat and pin toggle modes
+- `src/app/public-impact/page.tsx` — Standalone unauthenticated public impact radar with animated counters, marquee ticker, and 30s polling
+- `tests/impact.test.ts` — 18 unit and contract tests for EPA WARM calculations, ticker time, and heatmap contracts
 
 ---
 

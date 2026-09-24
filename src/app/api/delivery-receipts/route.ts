@@ -217,6 +217,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const servings = Number(listing.estimated_servings) || Math.round(quantityKg * 2.5);
       const co2eAvoidedKg = Number((quantityKg * 2.5).toFixed(2));
 
+      // Record to impact_totals table
+      try {
+        await adminSupabase.from("impact_totals").insert({
+          listing_id: listing.id,
+          donor_id: listing.donor_id,
+          shelter_id: activeMatch?.shelter_id || null,
+          meals_rescued: servings,
+          weight_kg: quantityKg,
+          co2e_avoided_kg: co2eAvoidedKg,
+        });
+      } catch (impactErr) {
+        console.warn("[Delivery Receipt] Failed to record to impact_totals:", impactErr);
+      }
+
       // Dispatch Acceptance Email to Donor
       if (donorProfile?.email) {
         try {
