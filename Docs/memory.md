@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** Phase 18 — Agent Log & Admin Override Panel  
-**File being worked:** src/app/(dashboard)/admin/agent-log/page.tsx, src/app/api/admin/agent-log/route.ts  
-**Last action:** Phase 17 complete — Public Impact Dashboard at /public-impact (no auth required), live animated counters for meals, kg diverted, CO2e (EPA WARM 2.5x factor), active network participants; live 5-delivery marquee ticker; Leaflet + leaflet.heat geospatial heatmap with heat/pins toggle; GET /api/impact route with 30s auto-polling; 18 tests passing. Total: 95 tests passing across all phases.
+**Phase:** Phase 19 — Tax Certificate & Reports  
+**File being worked:** src/lib/pdf/certificate.ts, src/app/api/donors/[id]/certificate/route.ts, src/app/(dashboard)/donor/impact/page.tsx  
+**Last action:** Phase 18 complete — Admin Agent Log page at /admin/agent-log with KPI cards, filtering, decision table, and override modal; POST /api/admin/agent-log/[id]/override route with reversal plans, database status rollbacks, and AgentOverrideAlert email dispatch; /admin/health page for queue depths & listings pipeline telemetry; 16 tests passing. Total: 111 tests passing across all phases.
 
 ---
 
@@ -72,8 +72,8 @@
 | 15 | CV Intake (Gemini Vision) | ✅ Complete | phase/15-cv-intake | — | Gemini Vision, sharp resize, CVUploader, confidence badge, Storage upload, form pre-fill |
 | 16 | NLP Parser (Gemini Text) | ✅ Complete | phase/16-nlp-parser | — | Gemini Text, date context, NLPParser, voice input (SpeechRecognition), side-by-side view, fallback |
 | 17 | Public Impact Dashboard | ✅ Complete | phase/17-public-impact-dashboard | — | Live public impact counters, ticker, waste heatmap, GET /api/impact, EPA WARM, 18 tests |
-| 18 | Agent Log & Admin Override | 🟡 In Progress | phase/18-admin-agent-log | — | Admin agent logs table, override API & modal, reason, SMTP alert |
-| 19 | Tax Certificate & Reports | ⬜ Not started | — | — | — |
+| 18 | Agent Log & Admin Override | ✅ Complete | phase/18-admin-agent-log | — | Admin agent logs table, override API & modal, reason, SMTP alert, health page, 16 tests |
+| 19 | Tax Certificate & Reports | 🟡 In Progress | phase/19-tax-certificate | — | PDFKit tax certificate, GET /api/donors/[id]/certificate, donor impact page |
 | 20 | Seed Data & E2E Testing | ⬜ Not started | — | — | — |
 | 21 | Mobile Polish | ⬜ Not started | — | — | — |
 | 22 | Final Deploy & Demo Prep | ⬜ Not started | — | — | — |
@@ -292,6 +292,15 @@
 - `src/components/impact/ImpactHeatmap.tsx` — Leaflet + leaflet.heat geospatial heatmap with heat and pin toggle modes
 - `src/app/public-impact/page.tsx` — Standalone unauthenticated public impact radar with animated counters, marquee ticker, and 30s polling
 - `tests/impact.test.ts` — 18 unit and contract tests for EPA WARM calculations, ticker time, and heatmap contracts
+
+### Key Source Files (Phase 18)
+- `src/lib/dispatcher/override.ts` — Pure dispatcher override validation, reversal rules, and demo agent logs
+- `src/app/api/admin/agent-log/route.ts` — Admin agent log fetch endpoint with action, status filtering, and stats
+- `src/app/api/admin/agent-log/[id]/override/route.ts` — Action reversal endpoint setting match/listing rollbacks & queuing email notices
+- `src/app/(dashboard)/admin/agent-log/page.tsx` — Full admin agent log supervision dashboard with KPI cards and override modal
+- `src/app/(dashboard)/admin/health/page.tsx` — Platform telemetry dashboard for active listings pipeline, timeouts, and queue depths
+- `src/emails/AgentOverrideAlert.tsx` — Brutalist email template notifying affected participants of administrator reversals
+- `tests/agent-log.test.ts` — 16 unit and integration tests for override reasons, eligibility rules, reversal plans, and email rendering
 
 ---
 

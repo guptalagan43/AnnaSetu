@@ -18,6 +18,7 @@ import { DeliveryAccepted } from "@/emails/DeliveryAccepted";
 import { DeliveryDisputed } from "@/emails/DeliveryDisputed";
 import { AutoConfirmShelter } from "@/emails/AutoConfirmShelter";
 import { EscalateToAdmin } from "@/emails/EscalateToAdmin";
+import { AgentOverrideAlert } from "@/emails/AgentOverrideAlert";
 
 // Re-export prop types so callers can import them from a single location
 export type { VerificationSubmittedProps } from "@/emails/VerificationSubmitted";
@@ -33,6 +34,7 @@ export type { DeliveryAcceptedProps } from "@/emails/DeliveryAccepted";
 export type { DeliveryDisputedProps } from "@/emails/DeliveryDisputed";
 export type { AutoConfirmShelterProps } from "@/emails/AutoConfirmShelter";
 export type { EscalateToAdminProps } from "@/emails/EscalateToAdmin";
+export type { AgentOverrideAlertProps } from "@/emails/AgentOverrideAlert";
 
 export async function renderVerificationSubmitted(
   props: React.ComponentProps<typeof VerificationSubmitted>
@@ -110,4 +112,10 @@ export async function renderEscalateToAdmin(
   props: React.ComponentProps<typeof EscalateToAdmin>
 ): Promise<string> {
   return await render(React.createElement(EscalateToAdmin, props));
+}
+
+export async function renderAgentOverrideAlert(
+  props: React.ComponentProps<typeof AgentOverrideAlert>
+): Promise<string> {
+  return await render(React.createElement(AgentOverrideAlert, props));
 }
