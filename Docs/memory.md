@@ -23,9 +23,9 @@
 
 ## 🔄 Currently Working On
 
-**Phase:** Phase 19 — Tax Certificate & Reports  
-**File being worked:** src/lib/pdf/certificate.ts, src/app/api/donors/[id]/certificate/route.ts, src/app/(dashboard)/donor/impact/page.tsx  
-**Last action:** Phase 18 complete — Admin Agent Log page at /admin/agent-log with KPI cards, filtering, decision table, and override modal; POST /api/admin/agent-log/[id]/override route with reversal plans, database status rollbacks, and AgentOverrideAlert email dispatch; /admin/health page for queue depths & listings pipeline telemetry; 16 tests passing. Total: 111 tests passing across all phases.
+**Phase:** Completed through Phase 19 (Ready for Phase 20: Seed Data & E2E Testing)  
+**File being worked:** —  
+**Last action:** Phase 19 complete — PDFKit Section 80G tax certificate generator with vector QR verification stamp; GET /api/donors/[id]/certificate PDF streaming route; GET /api/admin/export/impact bulk ESG CSV export; Donor Impact page at /donor/impact with Recharts monthly rescue velocity bar chart, category breakdown, and certificate download; 8 tests passing. Total: 119 tests passing across all phases.
 
 ---
 
@@ -73,7 +73,7 @@
 | 16 | NLP Parser (Gemini Text) | ✅ Complete | phase/16-nlp-parser | — | Gemini Text, date context, NLPParser, voice input (SpeechRecognition), side-by-side view, fallback |
 | 17 | Public Impact Dashboard | ✅ Complete | phase/17-public-impact-dashboard | — | Live public impact counters, ticker, waste heatmap, GET /api/impact, EPA WARM, 18 tests |
 | 18 | Agent Log & Admin Override | ✅ Complete | phase/18-admin-agent-log | — | Admin agent logs table, override API & modal, reason, SMTP alert, health page, 16 tests |
-| 19 | Tax Certificate & Reports | 🟡 In Progress | phase/19-tax-certificate | — | PDFKit tax certificate, GET /api/donors/[id]/certificate, donor impact page |
+| 19 | Tax Certificate & Reports | ✅ Complete | phase/19-tax-certificate | — | PDFKit tax certificate, GET /api/donors/[id]/certificate, donor impact page, CSV export, 8 tests |
 | 20 | Seed Data & E2E Testing | ⬜ Not started | — | — | — |
 | 21 | Mobile Polish | ⬜ Not started | — | — | — |
 | 22 | Final Deploy & Demo Prep | ⬜ Not started | — | — | — |
@@ -301,6 +301,13 @@
 - `src/app/(dashboard)/admin/health/page.tsx` — Platform telemetry dashboard for active listings pipeline, timeouts, and queue depths
 - `src/emails/AgentOverrideAlert.tsx` — Brutalist email template notifying affected participants of administrator reversals
 - `tests/agent-log.test.ts` — 16 unit and integration tests for override reasons, eligibility rules, reversal plans, and email rendering
+
+### Key Source Files (Phase 19)
+- `src/lib/pdf/certificate.ts` — PDFKit Section 80G tax certificate generator with vector QR verification stamp & bulk CSV formatter
+- `src/app/api/donors/[id]/certificate/route.ts` — PDF streaming endpoint returning official Indian Section 80G surplus donation tax certificates
+- `src/app/api/admin/export/impact/route.ts` — Bulk CSV export endpoint of all donor ESG metrics
+- `src/app/(dashboard)/donor/impact/page.tsx` — Full donor impact analytics page with Recharts monthly rescue velocity bar chart, category breakdown, and certificate download
+- `tests/tax-report.test.ts` — 8 unit tests for financial year calculation, CSV formatting & quote escaping, and PDFKit buffer generation
 
 ---
 

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test tests/checklist.test.ts tests/cv.test.ts tests/dispatcher.test.ts tests/nlp.test.ts tests/impact.test.ts tests/agent-log.test.ts",
+    "test": "tsx --test tests/checklist.test.ts tests/cv.test.ts tests/dispatcher.test.ts tests/nlp.test.ts tests/impact.test.ts tests/agent-log.test.ts tests/tax-report.test.ts",
     "seed": "tsx scripts/seed.ts",
     "db:push": "supabase db push"
   },
