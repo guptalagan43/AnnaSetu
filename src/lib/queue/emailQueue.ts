@@ -26,6 +26,8 @@ export interface EmailJobData {
     listingId?: string;
     userId?: string;
     eventType?: string;
+    logId?: string;
+    [key: string]: unknown;
   };
 }
 

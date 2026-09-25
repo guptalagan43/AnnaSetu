@@ -24,11 +24,9 @@ describe("Phase 18: Agent Log & Admin Override Panel — Unit & Integration Test
     });
 
     test("rejects non-string or null reason input", () => {
-      // @ts-expect-error test non-string
       const res1 = validateOverrideReason(null);
       assert.strictEqual(res1.valid, false);
 
-      // @ts-expect-error test object
       const res2 = validateOverrideReason({});
       assert.strictEqual(res2.valid, false);
     });

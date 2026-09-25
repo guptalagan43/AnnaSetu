@@ -122,7 +122,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams): Promi
     // 5. Stream response as downloadable PDF
     const filename = `AnnaSetu-80G-Certificate-${certificateId}.pdf`;
 
-    return new Response(pdfBuffer, {
+    return new Response(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",

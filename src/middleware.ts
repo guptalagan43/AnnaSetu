@@ -10,7 +10,6 @@ export async function middleware(request: NextRequest) {
   });
 
   const pathname = request.nextUrl.pathname;
-  console.log("[Middleware] Processing:", pathname);
 
   // Static assets and internal paths are always passed through
   const isStaticAsset =
@@ -65,7 +64,7 @@ export async function middleware(request: NextRequest) {
                 headers: request.headers,
               },
             });
-            response.cookies.set({ name, value: "", ...options });
+            response.cookies.set({ name, value, ...options });
           },
         },
       });
@@ -87,6 +86,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const isAuthenticated = Boolean(session || localUser);
+  console.log("[Middleware] pathname:", pathname, "localToken:", Boolean(localToken), "localUser:", localUser?.role, "isAuthenticated:", isAuthenticated);
 
   // Authenticated users visiting /login or /register are sent straight to their dashboard
   if (isAuthenticated && (pathname === "/login" || pathname === "/register")) {

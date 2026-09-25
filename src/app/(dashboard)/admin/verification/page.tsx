@@ -305,7 +305,6 @@ export default function AdminVerificationQueuePage() {
                   </div>
                 </div>
               )}
-            </div>
           </CardContent>
         </Card>
       )}

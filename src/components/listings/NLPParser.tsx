@@ -49,9 +49,9 @@ function getTier(score: number): ConfidenceTier {
   return "none";
 }
 
-function tierBadge(tier: ConfidenceTier): "success" | "warning" | "caution" | "emergency" {
-  const map: Record<ConfidenceTier, "success" | "warning" | "caution" | "emergency"> = {
-    high: "success", medium: "warning", low: "caution", none: "emergency",
+function tierBadge(tier: ConfidenceTier): "safe" | "warning" | "caution" | "emergency" {
+  const map: Record<ConfidenceTier, "safe" | "warning" | "caution" | "emergency"> = {
+    high: "safe", medium: "warning", low: "caution", none: "emergency",
   };
   return map[tier];
 }
@@ -59,8 +59,8 @@ function tierBadge(tier: ConfidenceTier): "success" | "warning" | "caution" | "e
 // SpeechRecognition types (not in lib.dom.d.ts in older setups)
 declare global {
   interface Window {
-    SpeechRecognition?: new () => SpeechRecognition;
-    webkitSpeechRecognition?: new () => SpeechRecognition;
+    SpeechRecognition?: any;
+    webkitSpeechRecognition?: any;
   }
 }
 
@@ -69,7 +69,7 @@ export function NLPParser({ onResult }: NLPParserProps) {
   const [parseState, setParseState] = useState<ParseState>("idle");
   const [result, setResult] = useState<NLPResult | null>(null);
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   // ─── Voice input ──────────────────────────────────────────────────────────
 
@@ -85,7 +85,7 @@ export function NLPParser({ onResult }: NLPParserProps) {
     rec.interimResults = false;
     rec.maxAlternatives = 1;
 
-    rec.onresult = (event) => {
+    rec.onresult = (event: any) => {
       const transcript = event.results[0]?.[0]?.transcript ?? "";
       setText((prev) => prev ? `${prev} ${transcript}` : transcript);
       setIsListening(false);

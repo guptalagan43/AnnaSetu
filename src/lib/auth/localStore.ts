@@ -2,7 +2,6 @@
  * Local & Demo User Store with JWT Session Management
  * Provides offline/local development auth fallback when Supabase is not connected.
  */
-import jwt from "jsonwebtoken";
 
 export interface StoredUser {
   id: string;
@@ -25,6 +24,36 @@ export interface TokenPayload {
 }
 
 const JWT_SECRET = process.env.JWT_SECRET || "annasetu-dev-jwt-secret-key-32chars-min";
+
+function base64UrlEncode(str: string): string {
+  const base64 = typeof btoa === "function" ? btoa(str) : Buffer.from(str).toString("base64");
+  return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+}
+
+function base64UrlDecode(str: string): string {
+  let base64 = str.replace(/-/g, "+").replace(/_/g, "/");
+  while (base64.length % 4) {
+    base64 += "=";
+  }
+  return typeof atob === "function" ? atob(base64) : Buffer.from(base64, "base64").toString("utf-8");
+}
+
+function createLocalJwt(payload: Record<string, unknown>): string {
+  const header = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const exp = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60; // 7 days
+  const fullPayload = base64UrlEncode(JSON.stringify({ ...payload, exp, iat: Math.floor(Date.now() / 1000) }));
+  
+  const secretBytes = new TextEncoder().encode(JWT_SECRET);
+  const dataBytes = new TextEncoder().encode(`${header}.${fullPayload}`);
+  
+  let hash = 0;
+  for (let i = 0; i < dataBytes.length; i++) {
+    hash = (hash << 5) - hash + dataBytes[i] + (secretBytes[i % secretBytes.length] || 0);
+    hash |= 0;
+  }
+  const sig = base64UrlEncode(Math.abs(hash).toString(16) + "annasetu");
+  return `${header}.${fullPayload}.${sig}`;
+}
 
 // Global singleton map to persist registered users across Next.js API reloads
 declare global {
@@ -109,16 +138,12 @@ export function registerLocalUser(params: {
 
   map.set(normalizedEmail, user);
 
-  const token = jwt.sign(
-    {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-      display_name: user.display_name,
-    },
-    JWT_SECRET,
-    { expiresIn: "7d" }
-  );
+  const token = createLocalJwt({
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+    display_name: user.display_name,
+  });
 
   return { user, token };
 }
@@ -140,16 +165,12 @@ export function authenticateLocalUser(
     return null;
   }
 
-  const token = jwt.sign(
-    {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-      display_name: user.display_name,
-    },
-    JWT_SECRET,
-    { expiresIn: "7d" }
-  );
+  const token = createLocalJwt({
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+    display_name: user.display_name,
+  });
 
   return { user, token };
 }
@@ -161,14 +182,18 @@ export function verifyAuthToken(token: string): {
   display_name: string;
 } | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
-    if (!decoded || !decoded.sub || !decoded.role) return null;
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+
+    const payload = JSON.parse(base64UrlDecode(parts[1]));
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
+    if (!payload.sub || !payload.role) return null;
 
     return {
-      id: decoded.sub,
-      email: decoded.email,
-      role: decoded.role,
-      display_name: decoded.display_name,
+      id: payload.sub,
+      email: payload.email,
+      role: payload.role,
+      display_name: payload.display_name,
     };
   } catch {
     return null;

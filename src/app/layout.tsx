@@ -52,6 +52,9 @@ export const metadata: Metadata = {
     description: "Connecting surplus food from businesses to shelters in minutes. Zero waste, zero friction, zero hunger.",
     creator: "@AnnaSetuRescue",
   },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export const viewport: Viewport = {

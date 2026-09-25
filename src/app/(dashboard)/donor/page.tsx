@@ -142,10 +142,10 @@ export default async function DonorDashboard() {
     .order("created_at", { ascending: false });
 
   const listings = dbListings ?? [];
-  const activeCount = listings.filter((l) => ["listed", "matched", "driver_assigned", "in_transit"].includes(l.status)).length;
-  const mealsCount = listings.reduce((acc, l) => acc + (l.estimated_servings || 0), 0);
-  const kgCount = listings.reduce((acc, l) => acc + (Number(l.quantity_kg) || 0), 0);
-  const ersAlertsCount = listings.filter((l) => (l.ers_score || 0) >= 80).length;
+  const activeCount = listings.filter((l: any) => ["listed", "matched", "driver_assigned", "in_transit"].includes(l.status)).length;
+  const mealsCount = listings.reduce((acc: number, l: any) => acc + (l.estimated_servings || 0), 0);
+  const kgCount = listings.reduce((acc: number, l: any) => acc + (Number(l.quantity_kg) || 0), 0);
+  const ersAlertsCount = listings.filter((l: any) => (l.ers_score || 0) >= 80).length;
 
   return (
     <div className="space-y-8">
@@ -234,7 +234,7 @@ export default async function DonorDashboard() {
             />
           ) : (
             <div className="space-y-4">
-              {listings.map((listing) => {
+              {listings.map((listing: any) => {
                 const config = statusConfig[listing.status] ?? statusConfig.listed;
                 const diffMs = new Date(listing.expiry_time).getTime() - Date.now();
                 const hoursLeft = Math.floor(diffMs / (1000 * 60 * 60));

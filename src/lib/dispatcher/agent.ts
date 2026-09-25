@@ -331,13 +331,18 @@ async function assignDriver(
     if (driverProfile?.email) {
       const { renderDriverAssigned } = await import("@/lib/email/templates");
       const html = await renderDriverAssigned({
-        driverName: driverProfile.display_name || "Driver",
+        recipientName: driverProfile.display_name || "Driver",
+        recipientRole: "driver",
         listingTitle: listing.title,
+        foodCategory: listing.food_category || "Prepared Meals",
+        quantityKg: Number(listing.quantity_kg || 0),
+        servings: Number(listing.estimated_servings || 0),
+        ersScore: Number(listing.ers_score || 0),
         pickupAddress: listing.pickup_address,
-        dashboardUrl: `${appUrl}/driver`,
-        recipientType: "driver",
-        shelterName: "",
-        shelterAddress: "",
+        dropoffAddress: "",
+        shelterName: "Assigned Shelter",
+        donorName: "Donor",
+        actionUrl: `${appUrl}/driver`,
       });
       await queueEmail({
         to: driverProfile.email,

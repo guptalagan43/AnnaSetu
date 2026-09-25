@@ -5,7 +5,14 @@ import { registerLocalUser } from "@/lib/auth/localStore";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { display_name, email, phone, password, role } = body;
+    let { display_name, email, phone, password, role, fullName, name } = body;
+    display_name = display_name || fullName || name;
+
+    // Map shorthand roles
+    if (role === "donor") role = "donor_admin";
+    else if (role === "shelter") role = "shelter_admin";
+    else if (role === "driver") role = "verified_driver";
+    else if (role === "admin") role = "platform_admin";
 
     // Validate required fields
     if (!display_name || !email || !phone || !password || !role) {
@@ -38,7 +45,7 @@ export async function POST(request: NextRequest) {
       try {
         const supabase = createAdminClient();
         const { data: existingUsers } = await supabase.auth.admin.listUsers();
-        if (existingUsers?.users?.some(u => u.email === email)) {
+        if (existingUsers?.users?.some((u: any) => u.email === email)) {
           return NextResponse.json(
             { error: "An account with this email already exists" },
             { status: 409 }

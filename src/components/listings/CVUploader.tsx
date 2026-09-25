@@ -48,9 +48,9 @@ function confidenceLabel(tier: ConfidenceTier): string {
   return map[tier];
 }
 
-function confidenceBadgeVariant(tier: ConfidenceTier): "success" | "warning" | "caution" | "emergency" {
-  const map: Record<ConfidenceTier, "success" | "warning" | "caution" | "emergency"> = {
-    high: "success",
+function confidenceBadgeVariant(tier: ConfidenceTier): "safe" | "warning" | "caution" | "emergency" {
+  const map: Record<ConfidenceTier, "safe" | "warning" | "caution" | "emergency"> = {
+    high: "safe",
     medium: "warning",
     low: "caution",
     none: "emergency",

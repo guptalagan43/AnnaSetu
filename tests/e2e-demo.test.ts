@@ -106,23 +106,24 @@ describe("Phase 20: Demo Data Seed & End-to-End Flow Tests", () => {
   describe("All 15 SMTP Email Types Firing (phases.md §20)", () => {
     test("1. VerificationSubmitted email renders correctly", async () => {
       const html = await renderVerificationSubmitted({
+        adminName: "Admin",
         businessName: "MG Road Dhaba",
         businessType: "Restaurant",
-        contactName: "Ramesh Kumar",
         contactEmail: "donor@annasetu.in",
         fssaiNumber: "11223344556677",
-        city: "Bengaluru",
-        state: "Karnataka",
         submittedAt: "25 Sep 2026",
-        reviewUrl: "https://annasetu.in/admin/verification/1",
       });
       assert.ok(html.includes("MG Road Dhaba"));
     });
 
     test("2. VerificationApproved email renders correctly", async () => {
       const html = await renderVerificationApproved({
+        donorName: "Ramesh Kumar",
         businessName: "MG Road Dhaba",
-        contactName: "Ramesh Kumar",
+        businessType: "Restaurant",
+        fssaiNumber: "11223344556677",
+        reviewedAt: "25 Sep 2026",
+        reviewedBy: "Admin",
         loginUrl: "https://annasetu.in/login",
       });
       assert.ok(html.includes("MG Road Dhaba"));
@@ -184,8 +185,10 @@ describe("Phase 20: Demo Data Seed & End-to-End Flow Tests", () => {
       const html = await renderCoordinatorInvite({
         shelterName: "Hope Shelter",
         inviterName: "Shelter Director",
-        inviteUrl: "https://annasetu.in/shelter/join?token=xyz",
-        expiresInHours: 48,
+        inviteeEmail: "coord@hopeshelter.org",
+        role: "Shelter Coordinator",
+        inviteLink: "https://annasetu.in/shelter/join?token=xyz",
+        expiresInDays: 2,
       });
       assert.ok(html.includes("Hope Shelter"));
     });
@@ -211,12 +214,16 @@ describe("Phase 20: Demo Data Seed & End-to-End Flow Tests", () => {
 
     test("9. DriverPickedUp email renders correctly", async () => {
       const html = await renderDriverPickedUp({
+        recipientName: "Hope Shelter",
+        recipientRole: "shelter",
         listingTitle: "Dal Makhani",
+        foodCategory: "Dairy-based dishes",
+        quantityKg: 18,
+        servings: 45,
         driverName: "Rahul Verma",
-        driverPhone: "+919876543221",
-        shelterName: "Hope Shelter",
-        pickupTime: "2:00 PM",
-        estimatedDeliveryTime: "2:35 PM",
+        pickedUpAt: "2:00 PM",
+        destinationName: "Hope Shelter",
+        destinationAddress: "Richmond Town",
         actionUrl: "https://annasetu.in/shelter",
       });
       assert.ok(html.includes("Rahul Verma"));
@@ -271,10 +278,9 @@ describe("Phase 20: Demo Data Seed & End-to-End Flow Tests", () => {
     test("13. AutoConfirmShelter email renders correctly", async () => {
       const html = await renderAutoConfirmShelter({
         shelterName: "Hope Shelter",
+        recipientName: "Hope Shelter Coordinator",
         listingTitle: "Dal Makhani",
-        listingId: "L-001",
         quantityKg: 18,
-        servings: 45,
         foodCategory: "Dairy-based dishes",
         ersScore: 84,
         pickupAddress: "MG Road Central",

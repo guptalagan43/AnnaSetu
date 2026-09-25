@@ -325,7 +325,7 @@ export async function findAndCreateMatch(listingId: string): Promise<MatchEngine
     .eq("listing_id", listingId)
     .eq("status", "declined");
 
-  const excludedIds = (declinedMatches || []).map((m) => m.shelter_id);
+  const excludedIds = (declinedMatches || []).map((m: any) => m.shelter_id);
 
   // 4. Resolve listing coordinates
   const coords = parseCoordinates(listing.pickup_location);

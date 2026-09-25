@@ -86,11 +86,10 @@ describe("Phase 17: Public Impact Dashboard — Unit & Integration Tests", () =>
     });
 
     test("filters out invalid coordinates outside valid lat/lng ranges", () => {
-      const raw = [
+      const raw: any[] = [
         { lat: 12.97, lng: 77.59, weight_kg: 50 }, // valid
         { lat: 95.0, lng: 77.59, weight_kg: 50 }, // invalid lat > 90
         { lat: 12.97, lng: 200.0, weight_kg: 50 }, // invalid lng > 180
-        // @ts-expect-error testing missing coords
         { weight_kg: 50 },
       ];
       const normalized = normalizeHotspots(raw);

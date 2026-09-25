@@ -61,13 +61,13 @@ export async function runWeeklyDigest(): Promise<DigestRunResult> {
         .gte("updated_at", sevenDaysAgo.toISOString());
 
       if (deliveredListings && deliveredListings.length > 0) {
-        const divertedKg = deliveredListings.reduce((sum, item) => sum + (Number(item.quantity_kg) || 0), 0);
+        const divertedKg = deliveredListings.reduce((sum: number, item: any) => sum + (Number(item.quantity_kg) || 0), 0);
         const mealsRescued = deliveredListings.reduce(
-          (sum, item) => sum + (Number(item.meals_count) || Math.round(Number(item.quantity_kg || 0) * 2.5)),
+          (sum: number, item: any) => sum + (Number(item.meals_count) || Math.round(Number(item.quantity_kg || 0) * 2.5)),
           0
         );
-        const donors = new Set(deliveredListings.map((l) => l.donor_id).filter(Boolean));
-        const shelters = new Set(deliveredListings.map((l) => l.matched_shelter_id).filter(Boolean));
+        const donors = new Set(deliveredListings.map((l: any) => l.donor_id).filter(Boolean));
+        const shelters = new Set(deliveredListings.map((l: any) => l.matched_shelter_id).filter(Boolean));
 
         stats = {
           mealsRescued: Math.max(mealsRescued, 1),

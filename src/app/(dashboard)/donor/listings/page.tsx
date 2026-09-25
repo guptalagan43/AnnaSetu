@@ -68,7 +68,7 @@ export default async function DonorListingsPage() {
         />
       ) : (
         <div className="space-y-4">
-          {listings.map((listing) => {
+          {listings.map((listing: any) => {
             const config = statusConfig[listing.status] ?? statusConfig.listed;
             const diffMs = new Date(listing.expiry_time).getTime() - Date.now();
             const hoursLeft = Math.floor(diffMs / (1000 * 60 * 60));
