@@ -7,14 +7,15 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import Link from "next/link";
-import { Logo } from "@/components/ui/Logo";
 
 const VEHICLES = [
   { id: "bike", label: "Motorcycle / Bike", icon: "🏍️", desc: "Best for quick small pickups (< 15 kg)" },
   { id: "scooter", label: "Scooter", icon: "🛵", desc: "Small bags & containers (< 15 kg)" },
   { id: "auto", label: "Auto Rickshaw", icon: "🛺", desc: "Medium loads (< 80 kg)" },
   { id: "car", label: "Car / Hatchback", icon: "🚗", desc: "Medium loads & trays (< 100 kg)" },
+  { id: "suv", label: "SUV / MUV", icon: "🚙", desc: "Large loads & multiple trays (< 150 kg)" },
   { id: "van", label: "Delivery Van / Tempo", icon: "🚐", desc: "Large multi-tray rescue runs (> 100 kg)" },
+  { id: "truck", label: "Mini Truck / Pickup", icon: "🚚", desc: "Bulk rescue operations (> 200 kg)" },
 ];
 
 export default function DriverRegisterPage() {
@@ -58,8 +59,12 @@ export default function DriverRegisterPage() {
 
   return (
     <div className="min-h-screen bg-brand-cream flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center flex flex-col items-center">
-        <Logo href="/" size="xl" className="mb-2" />
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <Link href="/" className="inline-block text-center w-full">
+          <span className="font-display text-display-lg text-brand-black tracking-tight">
+            ANNA<span className="text-brand-red">SETU</span>
+          </span>
+        </Link>
         <h2 className="mt-2 text-center font-display text-display-sm text-brand-black uppercase font-black">
           VOLUNTEER DRIVER SIGNUP
         </h2>
@@ -101,11 +106,10 @@ export default function DriverRegisterPage() {
                 {VEHICLES.map((v) => (
                   <label
                     key={v.id}
-                    className={`flex items-center gap-3 p-3 border-2 cursor-pointer transition-all ${
-                      vehicleType === v.id
+                    className={`flex items-center gap-3 p-3 border-2 cursor-pointer transition-all ${vehicleType === v.id
                         ? "border-brand-black bg-brand-black text-brand-white shadow-brutal-sm"
                         : "border-brand-black/20 bg-brand-white text-brand-black hover:border-brand-black"
-                    }`}
+                      }`}
                   >
                     <input
                       type="radio"

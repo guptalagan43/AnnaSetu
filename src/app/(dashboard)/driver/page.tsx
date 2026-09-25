@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { ERSBadge } from "@/components/ui/ERSBadge";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -9,6 +10,15 @@ import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 import Link from "next/link";
+
+const RouteMap = dynamic(() => import("@/components/routing/RouteMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-80 border-4 border-brand-black bg-brand-cream/40 flex items-center justify-center font-mono text-sm text-brand-black/70 animate-pulse">
+      LOADING RESCUE ROUTE MAP...
+    </div>
+  ),
+});
 
 interface DriverAssignment {
   id: string;
@@ -56,6 +66,9 @@ interface DriverProfile {
 export default function DriverDashboard() {
   const [driver, setDriver] = useState<DriverProfile | null>(null);
   const [assignments, setAssignments] = useState<DriverAssignment[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [routeData, setRouteData] = useState<any>(null);
+  const [showMap, setShowMap] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState<Record<string, boolean>>({});
   const [isTogglingAvailability, setIsTogglingAvailability] = useState(false);
@@ -95,6 +108,17 @@ export default function DriverDashboard() {
       if (assignRes.ok) {
         const json = await assignRes.json();
         setAssignments(json.data || []);
+      }
+
+      // 3. Fetch driver's active route
+      try {
+        const routeRes = await fetch("/api/drivers/me/route");
+        if (routeRes.ok) {
+          const rJson = await routeRes.json();
+          setRouteData(rJson);
+        }
+      } catch (rErr) {
+        console.warn("[Driver Dashboard] Route fetch error:", rErr);
       }
     } catch (err) {
       console.error("[Driver Dashboard] Error:", err);
@@ -229,7 +253,7 @@ export default function DriverDashboard() {
           >
             {driver?.is_available ? "GO OFFLINE" : "GO ONLINE (AVAILABLE)"}
           </Button>
-          <Link href={`/driver/route/${driver?.id || "me"}`}>
+          <Link href="/driver/route/me">
             <Button variant="secondary" className="font-bold tracking-wider border-2 border-brand-black">
               🗺️ ROUTE MAP
             </Button>
@@ -241,6 +265,49 @@ export default function DriverDashboard() {
           </Link>
         </div>
       </header>
+
+      {/* Live Route Map Section */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between border-b-2 border-brand-black pb-2">
+          <div className="flex items-center gap-3">
+            <h2 className="font-display text-display-md text-brand-black uppercase font-black">
+              LIVE RESCUE ROUTE MAP
+            </h2>
+            <Badge variant="safe" className="font-mono text-xs">
+              {routeData?.stops?.length || 0} STOPS · {routeData?.total_distance_km ?? 0} KM
+            </Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowMap(!showMap)}
+              className="border-2 border-brand-black text-xs font-mono font-bold"
+            >
+              {showMap ? "HIDE MAP ▲" : "SHOW MAP ▼"}
+            </Button>
+            <Link href="/driver/route/me">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="border-2 border-brand-black text-xs font-mono font-bold"
+              >
+                FULLSCREEN ROUTE ↗
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {showMap && (
+          <div className="w-full h-[400px] border-4 border-brand-black shadow-brutal overflow-hidden">
+            <RouteMap
+              stops={routeData?.stops || []}
+              startLocation={routeData?.start_location || { latitude: 12.9716, longitude: 77.5946 }}
+              routeGeometry={routeData?.route_geometry}
+            />
+          </div>
+        )}
+      </section>
 
       {/* Active Assignments / Route */}
       <section className="space-y-4">

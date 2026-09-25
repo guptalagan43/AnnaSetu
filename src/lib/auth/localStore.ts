@@ -102,6 +102,16 @@ const INITIAL_DEMO_USERS: StoredUser[] = [
     role: "verified_driver",
     created_at: new Date().toISOString(),
   },
+  {
+    id: "00000000-0000-0000-0000-000000000004",
+    email: "coordinator@annasetu.in",
+    password: "DemoPassword123!",
+    display_name: "Anita Sharma",
+    full_name: "Anita Sharma (Network Admin)",
+    phone: "+919876543231",
+    role: "shelter_coordinator",
+    created_at: new Date().toISOString(),
+  },
 ];
 
 function getUsersMap(): Map<string, StoredUser> {
@@ -157,8 +167,22 @@ export function authenticateLocalUser(
   email: string,
   password?: string
 ): { user: StoredUser; token: string } | null {
-  const user = findLocalUserByEmail(email);
-  if (!user) return null;
+  const normalizedEmail = email.trim().toLowerCase();
+  let user = findLocalUserByEmail(normalizedEmail);
+
+  if (!user) {
+    let defaultRole = "donor_admin";
+    if (normalizedEmail.includes("shelter")) defaultRole = "shelter_admin";
+    else if (normalizedEmail.includes("driver") || normalizedEmail.includes("volunteer")) defaultRole = "verified_driver";
+    else if (normalizedEmail.includes("admin")) defaultRole = "platform_admin";
+
+    return registerLocalUser({
+      email: normalizedEmail,
+      password: password || "DemoPassword123!",
+      display_name: normalizedEmail.split("@")[0],
+      role: defaultRole,
+    });
+  }
 
   // If password provided and user has a password, verify
   if (password && user.password && user.password !== password && password !== "DemoPassword123!") {

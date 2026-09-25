@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import "leaflet/dist/leaflet.css";
 import { RouteStop } from "@/lib/routing/osrm";
 
 interface RouteMapProps {
@@ -29,13 +30,37 @@ export default function RouteMap({
   useEffect(() => {
     if (typeof window === "undefined" || !mapRef.current) return;
 
+    let isCancelled = false;
+
     // Dynamically import Leaflet to prevent SSR window reference errors
     import("leaflet").then((L) => {
+      if (isCancelled || !mapRef.current) return;
+
+      const startLat = Number(startLocation?.latitude) || 12.9716;
+      const startLng = Number(startLocation?.longitude) || 77.5946;
+
+      // Fix default Leaflet icon paths
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      });
+
       // Initialize map once
       if (!mapInstanceRef.current && mapRef.current) {
+        // Clear any stale leaflet ID on the container
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((mapRef.current as any)._leaflet_id) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          delete (mapRef.current as any)._leaflet_id;
+        }
+
         const map = L.map(mapRef.current, {
-          center: [startLocation.latitude, startLocation.longitude],
+          center: [startLat, startLng],
           zoom: 13,
+          zoomControl: true,
         });
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -49,6 +74,13 @@ export default function RouteMap({
       const map = mapInstanceRef.current;
       if (!map) return;
 
+      // Invalidate size in case of container sizing transitions
+      setTimeout(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      }, 200);
+
       // Clear existing markers and polylines
       markersRef.current.forEach((m) => map.removeLayer(m));
       markersRef.current = [];
@@ -57,9 +89,7 @@ export default function RouteMap({
         polylineRef.current = null;
       }
 
-      const bounds = L.latLngBounds([
-        [startLocation.latitude, startLocation.longitude],
-      ]);
+      const bounds = L.latLngBounds([[startLat, startLng]]);
 
       // 1. Add Driver Current Location Marker
       const driverIcon = L.divIcon({
@@ -70,10 +100,7 @@ export default function RouteMap({
         popupAnchor: [0, -18],
       });
 
-      const driverMarker = L.marker(
-        [startLocation.latitude, startLocation.longitude],
-        { icon: driverIcon }
-      )
+      const driverMarker = L.marker([startLat, startLng], { icon: driverIcon })
         .addTo(map)
         .bindPopup(
           `<div style="font-family: monospace; font-size: 12px; font-weight: bold; color: #000000;">
@@ -84,7 +111,11 @@ export default function RouteMap({
       markersRef.current.push(driverMarker);
 
       // 2. Add Stop Markers
-      stops.forEach((stop, idx) => {
+      const validStops = (stops || []).filter(
+        (s) => s && !isNaN(Number(s.latitude)) && !isNaN(Number(s.longitude))
+      );
+
+      validStops.forEach((stop, idx) => {
         const isSelected = selectedStopId === stop.id;
         const isPickup = stop.type === "pickup";
         const bgColor = isPickup ? "#dc2626" : "#000000";
@@ -118,7 +149,7 @@ export default function RouteMap({
             <p style="font-weight: bold; margin: 0 0 4px 0;">${stop.name}</p>
             <p style="margin: 0 0 6px 0; color: #4b5563; font-size: 11px;">${stop.address}</p>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px;">
-              <span>ETA: <strong>${stop.eta_time || `${stop.eta_minutes} min`}</strong></span>
+              <span>ETA: <strong>${stop.eta_time || `${stop.eta_minutes || 0} min`}</strong></span>
               <span>Dist: <strong>${stop.distance_from_previous_km ?? 0} km</strong></span>
             </div>
             <a href="${navUrl}" target="_blank" rel="noopener noreferrer" style="display: block; text-align: center; background: #000000; color: #ffffff; padding: 6px 8px; text-decoration: none; font-weight: bold; border: 2px solid #000000;">
@@ -127,7 +158,7 @@ export default function RouteMap({
           </div>
         `;
 
-        const marker = L.marker([stop.latitude, stop.longitude], {
+        const marker = L.marker([Number(stop.latitude), Number(stop.longitude)], {
           icon: stopIcon,
         })
           .addTo(map)
@@ -138,7 +169,7 @@ export default function RouteMap({
         });
 
         markersRef.current.push(marker);
-        bounds.extend([stop.latitude, stop.longitude]);
+        bounds.extend([Number(stop.latitude), Number(stop.longitude)]);
       });
 
       // 3. Render Route Polyline
@@ -146,8 +177,8 @@ export default function RouteMap({
         routeGeometry && routeGeometry.length > 1
           ? routeGeometry
           : [
-              [startLocation.latitude, startLocation.longitude],
-              ...stops.map((s) => [s.latitude, s.longitude] as [number, number]),
+              [startLat, startLng],
+              ...validStops.map((s) => [Number(s.latitude), Number(s.longitude)] as [number, number]),
             ];
 
       if (polylinePoints.length > 1) {
@@ -161,18 +192,26 @@ export default function RouteMap({
         bounds.extend(polylinePoints);
       }
 
-      // Auto-fit to include start and all stops with comfortable padding
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+      // Auto-fit to include start and all stops
+      if (validStops.length > 0 || polylinePoints.length > 1) {
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+      } else {
+        map.setView([startLat, startLng], 13);
+      }
     });
+
+    return () => {
+      isCancelled = true;
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
   }, [stops, startLocation, routeGeometry, selectedStopId, onSelectStop]);
 
   return (
     <div className="relative w-full h-full min-h-[450px] border-4 border-brand-black shadow-brutal overflow-hidden bg-brand-cream/30">
       <div ref={mapRef} className="w-full h-full min-h-[450px] z-0" />
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      />
     </div>
   );
 }

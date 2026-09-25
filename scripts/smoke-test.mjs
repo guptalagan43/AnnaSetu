@@ -2,7 +2,7 @@
 // Comprehensive probe testing all public, auth, and dashboard routes
 
 async function run() {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = process.env.BASE_URL || process.argv[2] || "http://localhost:3001";
   console.log(`\n======================================================`);
   console.log(`Starting AnnaSetu Full Website Deep Route Audit`);
   console.log(`Base URL: ${baseUrl}`);
@@ -38,6 +38,8 @@ async function run() {
   await check("Landing Page (/)", `${baseUrl}/`);
   await check("Login Page (/login)", `${baseUrl}/login`);
   await check("Register Page (/register)", `${baseUrl}/register`);
+  await check("Terms of Service (/terms)", `${baseUrl}/terms`);
+  await check("Privacy Policy (/privacy)", `${baseUrl}/privacy`);
   await check("Public Impact Dashboard (/public-impact)", `${baseUrl}/public-impact`);
   await check("Design System Dev Showcase (/dev/components)", `${baseUrl}/dev/components`);
   await check("Unauthorized Page (/unauthorized)", `${baseUrl}/unauthorized`);
@@ -46,6 +48,7 @@ async function run() {
   console.log(`\n--- SECTION 2: UNAUTHENTICATED GUARDS ---`);
   await check("Donor Dashboard unauthenticated guard", `${baseUrl}/donor`, {}, [307, 302]);
   await check("Shelter Dashboard unauthenticated guard", `${baseUrl}/shelter`, {}, [307, 302]);
+  await check("Coordinator Dashboard unauthenticated guard", `${baseUrl}/coordinator`, {}, [307, 302]);
   await check("Driver Dashboard unauthenticated guard", `${baseUrl}/driver`, {}, [307, 302]);
   await check("Admin Dashboard unauthenticated guard", `${baseUrl}/admin`, {}, [307, 302]);
 
@@ -70,6 +73,7 @@ async function run() {
     { role: "admin", email: "admin@annasetu.in" },
     { role: "donor", email: "donor@annasetu.in" },
     { role: "shelter", email: "shelter@annasetu.in" },
+    { role: "coordinator", email: "coordinator@annasetu.in" },
     { role: "driver", email: "driver@annasetu.in" },
   ];
 
@@ -114,6 +118,10 @@ async function run() {
   await check("Shelter Capacity (/shelter/capacity)", `${baseUrl}/shelter/capacity`, shelterCookie);
   await check("Shelter Verification Checklist (/shelter/checklist/L-001)", `${baseUrl}/shelter/checklist/L-001`, shelterCookie);
   await check("Shelter Preferences (/shelter/preferences)", `${baseUrl}/shelter/preferences`, shelterCookie);
+
+  // Coordinator routes
+  const coordinatorCookie = authCookies["coordinator"] ? { headers: { Cookie: authCookies["coordinator"] } } : {};
+  await check("Coordinator Dashboard (/coordinator)", `${baseUrl}/coordinator`, coordinatorCookie);
 
   // Driver routes
   const driverCookie = authCookies["driver"] ? { headers: { Cookie: authCookies["driver"] } } : {};

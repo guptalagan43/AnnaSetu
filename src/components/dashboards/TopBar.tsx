@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/ui/Logo";
 
 interface TopBarProps {
   userRole: string;
@@ -52,7 +51,11 @@ export function TopBar({ userRole, userName, onMenuToggle, sidebarOpen }: TopBar
           </svg>
         </button>
         
-        <Logo href="/" size="sm" className="hidden sm:inline-flex" />
+        <Link href="/" className="hidden sm:flex items-center gap-3">
+          <span className="font-display text-xl tracking-tight">ANNA</span>
+          <span className="w-px h-6 bg-brand-black"></span>
+          <span className="font-display text-xl tracking-tight text-brand-red">SETU</span>
+        </Link>
       </div>
 
       <div className="flex items-center gap-6">

@@ -306,19 +306,19 @@ export function NLPParser({ onResult }: NLPParserProps) {
                 )}
               </div>
 
-              {/* Apply button */}
-              {(result.title || result.food_category || result.quantity_kg) && (
-                <Button
-                  type="button"
-                  variant="primary"
-                  size="sm"
-                  onClick={handleApply}
-                  id="nlp-apply-button"
-                  className="w-full"
-                >
-                  ✓ APPLY TO FORM
-                </Button>
-              )}
+              {/* Apply button — shown whenever a result exists (even fallback with just notes) */}
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                onClick={handleApply}
+                id="nlp-apply-button"
+                className="w-full"
+              >
+                {(result.title || result.food_category || result.quantity_kg)
+                  ? "✓ APPLY TO FORM"
+                  : "✓ APPLY RAW TEXT AS NOTES"}
+              </Button>
             </div>
           )}
         </div>

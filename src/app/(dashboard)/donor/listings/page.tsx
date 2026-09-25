@@ -92,7 +92,7 @@ export default async function DonorListingsPage() {
                       <span className="font-mono text-xs text-brand-black/70">{timeRemaining}</span>
                     </div>
                     <div className="font-mono text-xs text-brand-black/60">
-                      Pickup Window: {new Date(listing.pickup_window_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} – {new Date(listing.pickup_window_end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      Pickup Window: {listing.pickup_window_start && !isNaN(new Date(listing.pickup_window_start).getTime()) ? new Date(listing.pickup_window_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Immediate"} – {listing.pickup_window_end && !isNaN(new Date(listing.pickup_window_end).getTime()) ? new Date(listing.pickup_window_end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "+3 hrs"}
                     </div>
                   </div>
 

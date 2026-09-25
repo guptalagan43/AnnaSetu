@@ -212,7 +212,7 @@ export default function ShelterDashboard() {
           <Link href="/shelter/capacity">
             <Button variant="primary">UPDATE CAPACITY</Button>
           </Link>
-          <Link href="/shelter/capacity">
+          <Link href="/shelter/preferences">
             <Button variant="secondary">SET PREFERENCES</Button>
           </Link>
           <Button

@@ -29,6 +29,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/register") ||
     pathname.startsWith("/public-impact") ||
     pathname.startsWith("/dev") ||
+    pathname.startsWith("/terms") ||
+    pathname.startsWith("/privacy") ||
     pathname.startsWith("/unauthorized");
 
   const isApiRoute = pathname.startsWith("/api/");
@@ -92,7 +94,8 @@ export async function middleware(request: NextRequest) {
   if (isAuthenticated && (pathname === "/login" || pathname === "/register")) {
     const role = (session?.user?.user_metadata?.role || localUser?.role || "donor_admin") as string;
     let target = "/donor";
-    if (role === "shelter_admin" || role === "shelter_coordinator") target = "/shelter";
+    if (role === "shelter_admin") target = "/shelter";
+    else if (role === "shelter_coordinator") target = "/coordinator";
     else if (role === "verified_driver" || role === "casual_volunteer") target = "/driver";
     else if (role === "platform_admin" || role === "super_admin") target = "/admin";
 
@@ -107,6 +110,7 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/donor") ||
     pathname.startsWith("/shelter") ||
+    pathname.startsWith("/coordinator") ||
     pathname.startsWith("/driver") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/profile") ||

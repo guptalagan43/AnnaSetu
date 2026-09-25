@@ -122,7 +122,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
 
     const role = profile?.role ?? "";
     const isAdmin = ["super_admin", "platform_admin", "moderator"].includes(role);
-    const isShelterAdmin = role === "shelter_admin";
+    const isShelterAdmin = role === "shelter_admin" || role === "shelter_coordinator";
 
     if (!isAdmin && !isShelterAdmin) {
       return NextResponse.json(

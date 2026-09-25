@@ -258,7 +258,7 @@ export default async function DonorDashboard() {
                           <span className="font-mono text-xs text-brand-black/70">{timeRemaining}</span>
                         </div>
                         <div className="font-mono text-xs text-brand-black/60">
-                          Ready: {new Date(listing.pickup_window_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          Ready: {listing.pickup_window_start && !isNaN(new Date(listing.pickup_window_start).getTime()) ? new Date(listing.pickup_window_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Immediate"}
                         </div>
                       </div>
 
@@ -275,7 +275,7 @@ export default async function DonorDashboard() {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <Link href={`/donor/new-listing?relist=${listing.id}`}>
+                        <Link href={`/donor/new-listing?relist=last&from=${listing.id}`}>
                           <Button variant="ghost" size="sm" title="Copy to new listing">⚡ RELIST</Button>
                         </Link>
                       </div>

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/ui/Logo";
 
 interface SidebarItem {
   label: string;
@@ -20,11 +19,16 @@ const navItems: SidebarItem[] = [
   { label: "IMPACT", href: "/donor/impact", roles: ["donor_admin", "donor_staff"] },
   
   // Shelter nav
-  { label: "DASHBOARD", href: "/shelter", roles: ["shelter_admin", "shelter_coordinator"] },
-  { label: "CAPACITY & PREFS", href: "/shelter/capacity", roles: ["shelter_admin"] },
+  { label: "DASHBOARD", href: "/shelter", roles: ["shelter_admin"] },
+  { label: "CAPACITY", href: "/shelter/capacity", roles: ["shelter_admin"] },
+  { label: "PREFERENCES", href: "/shelter/preferences", roles: ["shelter_admin"] },
+  
+  // Coordinator (Network Admin) nav
+  { label: "NETWORK OVERVIEW", href: "/coordinator", roles: ["shelter_coordinator"] },
   
   // Driver nav
   { label: "DASHBOARD & RUNS", href: "/driver", roles: ["verified_driver", "casual_volunteer"] },
+  { label: "ROUTE MAP", href: "/driver/route/me", roles: ["verified_driver", "casual_volunteer"] },
   
   // Admin nav
   { label: "OVERVIEW", href: "/admin", roles: ["super_admin", "platform_admin", "moderator"] },
@@ -59,8 +63,9 @@ export function Sidebar({
       case "donor_staff":
         return "DONOR";
       case "shelter_admin":
-      case "shelter_coordinator":
         return "SHELTER";
+      case "shelter_coordinator":
+        return "COORDINATOR";
       case "verified_driver":
       case "casual_volunteer":
         return "DRIVER";
@@ -91,10 +96,12 @@ export function Sidebar({
     >
       <div className="flex flex-col h-full">
         {/* Logo */}
-        <div className="flex items-center justify-between p-4 border-b-2 border-brand-white/20">
-          <Link href="/" className="bg-brand-cream px-2 py-1 border-2 border-brand-white/20 inline-flex items-center hover:scale-[1.02] transition-transform">
-            <Logo size="sm" />
-          </Link>
+        <div className="flex items-center justify-between p-6 border-b-2 border-brand-white/20">
+          <div className="flex items-center gap-4">
+            <span className="font-display text-2xl tracking-tight">ANNA</span>
+            <span className="w-px h-6 bg-brand-white/50"></span>
+            <span className="font-display text-2xl tracking-tight text-brand-red">SETU</span>
+          </div>
           {onClose && (
             <button
               onClick={onClose}
