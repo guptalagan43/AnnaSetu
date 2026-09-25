@@ -7,6 +7,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import Link from "next/link";
+import { Logo } from "@/components/ui/Logo";
 
 const VEHICLES = [
   { id: "bike", label: "Motorcycle / Bike", icon: "🏍️", desc: "Best for quick small pickups (< 15 kg)" },
@@ -57,12 +58,8 @@ export default function DriverRegisterPage() {
 
   return (
     <div className="min-h-screen bg-brand-cream flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link href="/" className="inline-block text-center w-full">
-          <span className="font-display text-display-lg text-brand-black tracking-tight">
-            ANNA<span className="text-brand-red">SETU</span>
-          </span>
-        </Link>
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center flex flex-col items-center">
+        <Logo href="/" size="xl" className="mb-2" />
         <h2 className="mt-2 text-center font-display text-display-sm text-brand-black uppercase font-black">
           VOLUNTEER DRIVER SIGNUP
         </h2>

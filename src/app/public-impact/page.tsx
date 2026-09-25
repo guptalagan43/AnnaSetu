@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
+import { Logo } from "@/components/ui/Logo";
 import type {
   ImpactTotals,
   RecentActivityItem,
@@ -145,11 +146,9 @@ export default function PublicImpactPage() {
       <header className="border-b-4 border-brand-black bg-brand-black text-brand-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition">
-              <span className="font-display text-2xl sm:text-3xl tracking-wider text-brand-white">
-                ANNA<span className="text-brand-red">SETU</span>
-              </span>
-            </Link>
+            <div className="bg-brand-cream px-2 py-1 border-2 border-brand-white/20 inline-flex items-center">
+              <Logo href="/" size="sm" />
+            </div>
             <span className="hidden sm:inline-block px-2 py-0.5 text-xs font-mono font-bold bg-brand-red text-brand-white border border-brand-white uppercase">
               PUBLIC IMPACT
             </span>

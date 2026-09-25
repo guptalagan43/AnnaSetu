@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/ui/Logo";
 
 interface SidebarItem {
   label: string;
@@ -90,12 +91,10 @@ export function Sidebar({
     >
       <div className="flex flex-col h-full">
         {/* Logo */}
-        <div className="flex items-center justify-between p-6 border-b-2 border-brand-white/20">
-          <div className="flex items-center gap-4">
-            <span className="font-display text-2xl tracking-tight">ANNA</span>
-            <span className="w-px h-6 bg-brand-white/50"></span>
-            <span className="font-display text-2xl tracking-tight text-brand-red">SETU</span>
-          </div>
+        <div className="flex items-center justify-between p-4 border-b-2 border-brand-white/20">
+          <Link href="/" className="bg-brand-cream px-2 py-1 border-2 border-brand-white/20 inline-flex items-center hover:scale-[1.02] transition-transform">
+            <Logo size="sm" />
+          </Link>
           {onClose && (
             <button
               onClick={onClose}

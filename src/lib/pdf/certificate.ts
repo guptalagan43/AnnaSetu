@@ -140,9 +140,9 @@ export async function generateTaxCertificatePdf(data: CertificateData): Promise<
       });
 
       const chunks: Buffer[] = [];
-      doc.on("data", (chunk) => chunks.push(chunk));
+      doc.on("data", (chunk: any) => chunks.push(chunk));
       doc.on("end", () => resolve(Buffer.concat(chunks)));
-      doc.on("error", (err) => reject(err));
+      doc.on("error", (err: any) => reject(err));
 
       const pageWidth = doc.page.width;
       const pageHeight = doc.page.height;

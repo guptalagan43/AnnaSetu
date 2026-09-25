@@ -1,13 +1,11 @@
+import { Logo } from "@/components/ui/Logo";
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-brand-white">
       <header className="border-b-2 border-brand-black">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <span className="font-display text-3xl tracking-tight">ANNA</span>
-            <span className="w-px h-8 bg-brand-black"></span>
-            <span className="font-display text-3xl tracking-tight">SETU</span>
-          </div>
+          <Logo href="/" size="lg" />
           <nav className="hidden md:flex items-center gap-8">
             <a href="/register" className="btn-primary">GET STARTED</a>
             <a href="/public-impact" className="btn-ghost">LIVE IMPACT</a>
@@ -143,7 +141,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="font-display text-2xl tracking-tight mb-4">ANNA<span className="text-brand-red">·</span>SETU</div>
+              <div className="bg-brand-cream px-2 py-1 border-2 border-brand-white/20 inline-flex items-center mb-4">
+                <Logo size="md" />
+              </div>
               <p className="font-body text-body-sm text-brand-white/60 leading-relaxed">
                 Real-time food rescue platform connecting surplus to shelters.
               </p>
