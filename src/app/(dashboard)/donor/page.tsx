@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { ERSBadge } from "@/components/ui/ERSBadge";
-<<<<<<< HEAD
 import { EmptyState } from "@/components/ui/EmptyState";
 
 interface VerificationStatus {
@@ -134,7 +133,7 @@ export default async function DonorDashboard() {
     businessName = verif?.business_name ?? "";
   }
 
-// Fetch donor's real listings
+  // Fetch donor's real listings
   const { data: dbListings } = await supabase
     .from("listings")
     .select("*")
@@ -157,7 +156,6 @@ export default async function DonorDashboard() {
           </h1>
           {isVerified ? (
             <p className="font-body text-body-md text-brand-black/60 mt-1">
-<<<<<<< HEAD
               {businessName || "Verified Food Donor"} · Verified ✅
             </p>
           ) : (
@@ -188,25 +186,25 @@ export default async function DonorDashboard() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <Card>
             <CardContent className="text-center">
-<div className="font-display text-display-xl text-brand-red">{activeCount}</div>
+              <div className="font-display text-display-xl text-brand-red">{activeCount}</div>
               <div className="label-text text-brand-black/60 mt-1">ACTIVE LISTINGS</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="text-center">
-<div className="font-display text-display-xl text-brand-red">{mealsCount}</div>
+              <div className="font-display text-display-xl text-brand-red">{mealsCount}</div>
               <div className="label-text text-brand-black/60 mt-1">MEALS LISTED</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="text-center">
-<div className="font-display text-display-xl text-brand-red">{Math.round(kgCount)}</div>
+              <div className="font-display text-display-xl text-brand-red">{Math.round(kgCount)}</div>
               <div className="label-text text-brand-black/60 mt-1">KG DIVERTED</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="text-center">
-<div className="font-display text-display-xl text-brand-red">{ersAlertsCount}</div>
+              <div className="font-display text-display-xl text-brand-red">{ersAlertsCount}</div>
               <div className="label-text text-brand-black/60 mt-1">ERS ALERTS</div>
             </CardContent>
           </Card>
@@ -315,7 +313,7 @@ export default async function DonorDashboard() {
               </div>
             </div>
             <div className="mt-6 text-center">
-<Link href="/donor/impact">
+              <Link href="/donor/impact">
                 <Button variant="secondary">VIEW FULL IMPACT & DOWNLOAD TAX CERTIFICATE (PDF) →</Button>
               </Link>
             </div>
