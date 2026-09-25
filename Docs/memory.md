@@ -199,6 +199,20 @@
 - `src/components/ui/ERSBadge.tsx` — ERS score badge with pulse
 - `src/components/ui/Input.tsx` — Form input with label/error/hint
 - `src/components/ui/Modal.tsx` — Modal + ConfirmModal
+
+### Key Source Files (Phase 04)
+- `src/app/(auth)/register/donor-verify/page.tsx` — 4-step donor verification form
+- `src/app/(auth)/register/donor-verify/layout.tsx` — Wider layout for verification form
+- `src/lib/validators/verification.schema.ts` — Zod schemas for all 4 steps
+- `src/components/verification/LocationPicker.tsx` — Leaflet map pin component (SSR-safe)
+- `src/app/api/verification/route.ts` — GET (admin queue) + POST (submit verification)
+- `src/app/api/verification/[id]/route.ts` — GET single + PATCH (mark under_review)
+- `src/app/api/verification/[id]/approve/route.ts` — Admin approve endpoint
+- `src/app/api/verification/[id]/reject/route.ts` — Admin reject endpoint (requires reason)
+- `src/app/api/upload/route.ts` — Supabase Storage file upload (5MB limit, auth required)
+- `src/app/(dashboard)/donor/page.tsx` — Updated: verification banner, real auth, gated dashboard
+- `package.json` — Added @hookform/resolvers
+
 ### Key Source Files (Phase 05)
 - `src/app/(dashboard)/admin/verification/page.tsx` — Admin verification queue with filtering, search, pagination
 - `src/app/(dashboard)/admin/verification/[id]/page.tsx` — Individual review page with checklist, document links, approve/reject actions
@@ -277,6 +291,7 @@
 - `src/app/(dashboard)/shelter/checklist/[listing_id]/page.tsx` — Shelter delivery acceptance checklist interface with 5-point physical verification, PIN input, and dispute submission
 - `src/emails/DeliveryAccepted.tsx` — Brutalist email template confirming rescue completion with food rescued, meals served, and CO2e avoided metrics
 - `src/emails/DeliveryDisputed.tsx` — Brutalist email template for warning notice (strike 1) and account suspension notice (strike 2)
+
 ### Key Source Files (Phase 14)
 - `src/lib/dispatcher/agent.ts` — Agentic Dispatcher with AUTO_CONFIRM_SHELTER, ASSIGN_DRIVER, ESCALATE_TO_ADMIN, 2-min idempotency guard
 - `src/app/api/dispatcher/opt-out/route.ts` — 5-minute shelter opt-out reversal endpoint
